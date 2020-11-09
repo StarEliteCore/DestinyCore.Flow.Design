@@ -1,13 +1,24 @@
 <template>
   <div class="home">
-    <div id="panel"></div>
+    <div>
+      <div><button @click="addNode">添加节点</button></div>
+    </div>
+    <div id="panel" style="border:solid red 1px;"></div>
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
-import antvg6 from "@antv/g6";
+import antvg6, { Graph } from "@antv/g6";
+import {
+  IGraphDataDto,
+  GraphDataDto
+} from "@/domain/graph-entity/graph-data-entity";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { NodeDto, INodeDto } from "@/domain/node-entity/node-entity";
+import { IEdge } from "@antv/g6/lib/interface/item";
+import { Guid } from "guid-typescript";
 @Options({
   components: {
     HelloWorld
@@ -16,21 +27,78 @@ import antvg6 from "@antv/g6";
 export default class Home extends Vue {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private graph: any;
-  private visualcanvasdata = {
-    // nodes: [
-    // ],
-    // edges:[
-    // ],
-  };
+  private panelData: IGraphDataDto = new GraphDataDto();
+  private nodeData: Array<INodeDto> = new Array<NodeDto>();
   mounted() {
-    console.log(123456);
     this.Init();
   }
   private Init() {
-    const width =
-      document.getElementById("visualcanvasparent")?.scrollWidth || 1200;
-    const height =
-      document.getElementById("visualcanvasparent")?.scrollHeight || 500;
+    const width = 1200;
+    const height = 500;
+    antvg6.registerBehavior("drag-point-add-edge", {
+      getEvents() {
+        return {
+          click: "onMouseClick",
+          mousedown: "onMouseDown",
+          mousemove: "onMouseMove",
+          mouseup: "onMouseUp",
+          "node:click": "onNodeClick",
+          "edge:click": "onEdgeClick"
+        };
+      },
+      onMouseDown(ev: any) {
+        ev.preventDefault();
+
+        const self = this;
+        const node = ev.item;
+        if (node && ev.target.get("className").startsWith("link-point")) {
+          const graph = self.graph as Graph;
+          const model = node.getModel();
+          if (!self.addingEdge && !self.edge) {
+            self.edge = graph.addItem("edge", {
+              source: model.id,
+              target: model.id
+            });
+            self.addingEdge = true;
+          }
+        }
+      },
+      onMouseMove(ev: any) {
+        ev.preventDefault();
+        const self = this;
+        const point = { x: ev.x, y: ev.y };
+        if (self.addingEdge && self.edge) {
+          (self.graph as Graph).updateItem(self.edge as IEdge, {
+            target: point
+          });
+        }
+      },
+      onMouseUp(ev: any) {
+        ev.preventDefault();
+        const self = this;
+        const node = ev.item;
+        const graph = self.graph as Graph;
+        // 这里会走两次，第二次destroyed为true
+        // 因此增加判断
+        if (node && !node.destroyed && node.getType() === "node") {
+          const model = node.getModel();
+          console.log(model);
+          if (self.addingEdge && self.edge) {
+            graph.updateItem(self.edge as IEdge, {
+              target: model.id
+            });
+            self.edge = null;
+            self.addingEdge = false;
+          }
+        } else {
+          if (self.addingEdge && self.edge) {
+            graph.removeItem(self.edge as IEdge);
+            self.edge = null;
+            self.addingEdge = false;
+          }
+        }
+      }
+    });
     /**
      * 定义工具栏
      */
@@ -54,21 +122,31 @@ export default class Home extends Vue {
       fitViewPadding: 20, //元素自适应画布时的四周留白像素值
       modes: {
         // 支持的 behavior
-        default: ["drag-canvas", "drag-node", "zoom-canvas", "click-select"]
+        default: ["drag-node", "drag-point-add-edge"]
       },
-      defaultEdge: {
-        type: "polyline",
+      defaultNode: {
         style: {
-          radius: 10,
-          offset: 30,
-          endArrow: true,
-          stroke: "#F6BD16"
+          fill: "#FFF"
+        },
+        linkPoints: {
+          top: true,
+          right: true,
+          bottom: true,
+          left: true,
+          size: 10,
+          fill: "#fff"
         }
       }
     });
-
-    this.graph.data(this.visualcanvasdata);
+    this.graph.data(this.panelData);
     this.graph.render();
+  }
+  private addNode() {
+    const node = new NodeDto();
+    node.id = Guid.create().toString();
+    this.nodeData.push(node);
+    this.graph.addItem("node", node);
+    console.log(this.graph);
     console.log(123456);
   }
 }

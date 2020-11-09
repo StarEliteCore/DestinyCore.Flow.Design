@@ -5,7 +5,7 @@ export interface INodeLineCommonStyle extends ICommonStroke {
   /**
    * 边宽度
    */
-  lineWidth: string;
+  lineWidth: number;
   /**
    * 阴影颜色
    */
@@ -17,11 +17,11 @@ export interface INodeLineCommonStyle extends ICommonStroke {
   /**
    * 阴影 x 方向偏移量
    */
-  shadowOffsetX: string;
+  shadowOffsetX: number;
   /**
    * 阴影 y 方向偏移量
    */
-  shadowOffsetY: string;
+  shadowOffsetY: number;
 }
 /**
  * 公共属性file
@@ -49,11 +49,11 @@ export interface INodeLineLabelCfgCommonStyle extends ICommonFill,ICommonStroke 
   /**
    * 文本描边粗细
    */
-  lineWidth: string;
+  lineWidth: number;
   /**
    * 文本透明度
    */
-  opacity: string;
+  opacity: number;
   /**
    * 文本内容的当前字体属性
    */
@@ -61,7 +61,7 @@ export interface INodeLineLabelCfgCommonStyle extends ICommonFill,ICommonStroke 
   /**
    * 文本字体大小
    */
-  fontSize: string;
+  fontSize: number;
 }
 
 /**
