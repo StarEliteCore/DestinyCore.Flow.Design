@@ -48,7 +48,6 @@ export default class Home extends Vue {
       },
       onMouseDown(ev: any) {
         ev.preventDefault();
-
         const self = this;
         const node = ev.item;
         if (node && ev.target.get("className").startsWith("link-point")) {
@@ -122,32 +121,45 @@ export default class Home extends Vue {
       fitViewPadding: 20, //元素自适应画布时的四周留白像素值
       modes: {
         // 支持的 behavior
-        default: ["drag-node", "drag-point-add-edge"]
+        default: ["drag-node", "drag-point-add-edge"] //"create-edge"
       },
       defaultNode: {
         style: {
           fill: "#FFF"
         },
         linkPoints: {
-          top: true,
-          right: true,
-          bottom: true,
-          left: true,
+          top: false,
+          right: false,
+          bottom: false,
+          left: false,
           size: 10,
           fill: "#fff"
+        }
+      },
+      defaultEdge: {
+        type: "quadratic",
+        style: {
+          stroke: "#F6BD16",
+          lineWidth: 2,
+          endArrow: true
         }
       }
     });
     this.graph.data(this.panelData);
     this.graph.render();
+    // this.graph.on("aftercreateedge", (e: any) => {
+    //   const edges = this.graph.save().edges;
+    //   antvg6.Util.processParallelEdges(edges);
+    //   this.graph.getEdges().forEach((edge: any, i: string|number) => {
+    //     this.graph.updateItem(edge, edges[i]);
+    //   });
+    // });
   }
   private addNode() {
     const node = new NodeDto();
     node.id = Guid.create().toString();
     this.nodeData.push(node);
     this.graph.addItem("node", node);
-    console.log(this.graph);
-    console.log(123456);
   }
 }
 </script>
