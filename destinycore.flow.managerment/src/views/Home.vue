@@ -16,7 +16,11 @@ import {
   GraphDataDto
 } from "@/domain/graph-entity/graph-data-entity";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { NodeDto, INodeDto } from "@/domain/node-entity/node-entity";
+import {
+  NodeDto,
+  INodeDto,
+  ModelRectNodeDto
+} from "@/domain/node-entity/node-entity";
 import { IEdge } from "@antv/g6/lib/interface/item";
 import { Guid } from "guid-typescript";
 @Options({
@@ -29,25 +33,45 @@ export default class Home extends Vue {
   private graph: any;
   private panelData: IGraphDataDto = new GraphDataDto();
   private nodeData: Array<INodeDto> = new Array<NodeDto>();
+  private ints: number = 0;
   mounted() {
     this.Init();
   }
   private Init() {
     const width = 1200;
     const height = 500;
+    const _that = this;
     antvg6.registerBehavior("drag-point-add-edge", {
       getEvents() {
         return {
-          click: "onMouseClick",
-          mousedown: "onMouseDown",
-          mousemove: "onMouseMove",
-          mouseup: "onMouseUp",
-          "node:click": "onNodeClick",
-          "edge:click": "onEdgeClick"
+          click: "onMouseClick", //鼠标点击画布任意位置时
+          mousedown: "onMouseDown", //鼠标按下时添加连线事件
+          mousemove: "onMouseMove", //鼠标移动到画布时
+          mouseup: "onMouseUp", //鼠标松开时修改连线事件
+          "node:click": "onNodeClick", //单击节点事件
+          "edge:click": "onEdgeClick", //单击线事件
+          "node:dblclick": "onNodedbClick", //双击节点事件
+          "node:dragend": "nodeDragend" //节点拖动完成事件
         };
       },
+      /**
+       * 鼠标点击画布任意位置时
+       */
+      onMouseClick(ev: any) {
+        ev.preventDefault();
+        if (!ev.item) {
+          // console.log(this.graph);
+          // console.log(ev.item);
+          console.log(1);
+        }
+      },
+      //#region  节点和节点之间添加连线
+      /**
+       * 鼠标按下时添加连线
+       */
       onMouseDown(ev: any) {
         ev.preventDefault();
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
         const node = ev.item;
         if (node && ev.target.get("className").startsWith("link-point")) {
@@ -62,18 +86,12 @@ export default class Home extends Vue {
           }
         }
       },
-      onMouseMove(ev: any) {
-        ev.preventDefault();
-        const self = this;
-        const point = { x: ev.x, y: ev.y };
-        if (self.addingEdge && self.edge) {
-          (self.graph as Graph).updateItem(self.edge as IEdge, {
-            target: point
-          });
-        }
-      },
+      /**
+       * 鼠标松开时修改连线
+       */
       onMouseUp(ev: any) {
         ev.preventDefault();
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
         const node = ev.item;
         const graph = self.graph as Graph;
@@ -81,7 +99,7 @@ export default class Home extends Vue {
         // 因此增加判断
         if (node && !node.destroyed && node.getType() === "node") {
           const model = node.getModel();
-          console.log(model);
+          // console.log(model);
           if (self.addingEdge && self.edge) {
             graph.updateItem(self.edge as IEdge, {
               target: model.id
@@ -96,6 +114,104 @@ export default class Home extends Vue {
             self.addingEdge = false;
           }
         }
+      },
+      //#endregion
+      /**
+       * 鼠标移动到画布时
+       */
+      onMouseMove(ev: any) {
+        ev.preventDefault();
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const self = this;
+        const point = { x: ev.x, y: ev.y };
+        if (self.addingEdge && self.edge) {
+          (self.graph as Graph).updateItem(self.edge as IEdge, {
+            target: point
+          });
+        }
+      },
+
+      /**
+       * 鼠标单击某个节点时
+       */
+      onNodeClick(ev: any) {
+        ev.preventDefault();
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const self = this;
+        const graph = self.graph as Graph;
+        const item = ev.item;
+        if (item) {
+          // 将当前是click的都设为false
+          const clickNodes = graph.findAllByState("node", "click");
+          clickNodes.forEach(cn => {
+            graph.setItemState(cn, "click", false);
+          });
+          // 将当前是click的都设为false
+          const clickEdgees = graph.findAllByState("edge", "click");
+          clickEdgees.forEach(cn => {
+            graph.setItemState(cn, "click", false);
+          });
+          // 将当前node设为click
+          // console.log("to click item", item);
+          graph.setItemState(item, "click", true);
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const model = item.getModel();
+          console.log(model);
+        }
+      },
+      /**
+       * 鼠标单击某根线时
+       */
+      onEdgeClick(ev: any) {
+        ev.preventDefault();
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const self = this;
+        const graph = self.graph as Graph;
+        const item = ev.item;
+        // 将当前是click的都设为false
+        const clickNodes = graph.findAllByState("node", "click");
+        clickNodes.forEach(cn => {
+          graph.setItemState(cn, "click", false);
+        });
+        const clickEdgees = graph.findAllByState("edge", "click");
+        clickEdgees.forEach(cn => {
+          graph.setItemState(cn, "click", false);
+        });
+        // 将当前node设为click
+        graph.setItemState(item, "click", true);
+        const model = item.getModel();
+        // console.log(model);
+      },
+      /**
+       * 双击Node事件
+       */
+      onNodedbClick(ev: any) {
+        ev.preventDefault();
+        console.log(123456789);
+        console.log(ev);
+        // // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const self = this;
+        const graph = self.graph as Graph;
+        const item = ev.item;
+        console.log(item.getModel());
+        // // 将当前是click的都设为false
+        // const clickNodes = graph.findAllByState("node", "click");
+        // clickNodes.forEach(cn => {
+        //   graph.setItemState(cn, "click", false);
+        // });
+        // const clickEdgees = graph.findAllByState("edge", "click");
+        // clickEdgees.forEach(cn => {
+        //   graph.setItemState(cn, "click", false);
+        // });
+        // // 将当前node设为click
+        // graph.setItemState(item, "click", true);
+        // const model = item.getModel();
+        // console.log(model);
+      },
+      nodeDragend(ev: any) {
+        const self = this;
+        const node = ev.item.getModel();
+        console.log("拖动完成了", node);
       }
     });
     /**
@@ -121,43 +237,50 @@ export default class Home extends Vue {
       fitViewPadding: 20, //元素自适应画布时的四周留白像素值
       modes: {
         // 支持的 behavior
-        default: ["drag-node", "drag-point-add-edge"] //"create-edge"
+        default: [
+          "drag-node",
+          "drag-point-add-edge",
+          "zoom-canvas",
+          "drag-canvas"
+        ]
       },
-      defaultNode: {
-        style: {
-          fill: "#FFF"
-        },
-        linkPoints: {
-          top: false,
-          right: false,
-          bottom: false,
-          left: false,
-          size: 10,
-          fill: "#fff"
-        }
-      },
+      /**
+       * 默认线
+       */
       defaultEdge: {
         type: "quadratic",
         style: {
-          stroke: "#F6BD16",
+          stroke: "#00B5FF",
           lineWidth: 2,
           endArrow: true
+        }
+      },
+      /**
+       * 节点样式修改
+       */
+      nodeStateStyles: {
+        click: {
+          fill: "#C6E5FF"
+        }
+      },
+      /**
+       * 线的样式修改
+       */
+      edgeStateStyles: {
+        click: {
+          fill: "F000",
+          lineWidth: 5
         }
       }
     });
     this.graph.data(this.panelData);
     this.graph.render();
-    // this.graph.on("aftercreateedge", (e: any) => {
-    //   const edges = this.graph.save().edges;
-    //   antvg6.Util.processParallelEdges(edges);
-    //   this.graph.getEdges().forEach((edge: any, i: string|number) => {
-    //     this.graph.updateItem(edge, edges[i]);
-    //   });
-    // });
   }
   private addNode() {
-    const node = new NodeDto();
-    node.id = Guid.create().toString();
+    const node = new ModelRectNodeDto();
+    this.ints = this.ints + 1;
+    node.label += this.ints.toString();
+    node.id = this.ints.toString();
     this.nodeData.push(node);
     this.graph.addItem("node", node);
   }

@@ -1,5 +1,6 @@
 const path = require("path");
 module.exports = {
+  lintOnSave: false,
   devServer: {
     // 监听端口
     port: 8963,
