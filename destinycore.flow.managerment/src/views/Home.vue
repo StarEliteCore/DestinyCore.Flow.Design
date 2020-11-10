@@ -23,6 +23,7 @@ import {
 } from "@/domain/node-entity/node-entity";
 import { IEdge } from "@antv/g6/lib/interface/item";
 import { Guid } from "guid-typescript";
+import { ILineDto, LineDto } from "@/domain/line-entity/line-entity";
 @Options({
   components: {
     HelloWorld
@@ -33,7 +34,7 @@ export default class Home extends Vue {
   private graph: any;
   private panelData: IGraphDataDto = new GraphDataDto();
   private nodeData: Array<INodeDto> = new Array<NodeDto>();
-  private ints: number = 0;
+  private lineData: Array<ILineDto> = new Array<LineDto>();
   mounted() {
     this.Init();
   }
@@ -77,8 +78,13 @@ export default class Home extends Vue {
         if (node && ev.target.get("className").startsWith("link-point")) {
           const graph = self.graph as Graph;
           const model = node.getModel();
+          let _line = new LineDto();
+          _line.source = model.id;
+          _that.lineData.push(_line);
+          console.log(_line);
           if (!self.addingEdge && !self.edge) {
             self.edge = graph.addItem("edge", {
+              id: _line.id,
               source: model.id,
               target: model.id
             });
@@ -99,8 +105,13 @@ export default class Home extends Vue {
         // 因此增加判断
         if (node && !node.destroyed && node.getType() === "node") {
           const model = node.getModel();
+
           // console.log(model);
           if (self.addingEdge && self.edge) {
+            debugger;
+            const edgemodel = (self.edge as IEdge).getModel();
+             const degrindex =_that.lineData.findIndex(x=>x.id==edgemodel.id)
+             
             graph.updateItem(self.edge as IEdge, {
               target: model.id
             });
@@ -130,7 +141,6 @@ export default class Home extends Vue {
           });
         }
       },
-
       /**
        * 鼠标单击某个节点时
        */
@@ -278,9 +288,8 @@ export default class Home extends Vue {
   }
   private addNode() {
     const node = new ModelRectNodeDto();
-    this.ints = this.ints + 1;
-    node.label += this.ints.toString();
-    node.id = this.ints.toString();
+    node.id = Guid.create().toString();
+    console.log(node.id);
     this.nodeData.push(node);
     this.graph.addItem("node", node);
   }

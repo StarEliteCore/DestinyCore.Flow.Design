@@ -6,6 +6,7 @@ import {
 
 import { IEntity } from '@/sharad/baseentity/IEntity';
 import { INodeLineCommonPropertyDto } from '@/domain/common-entity/nodeline-common-property-entity';
+import { Guid } from 'guid-typescript';
 
 /**
  * 边的LabelCfg属性接口定义
@@ -22,7 +23,7 @@ export interface ILineLabelCfg extends INodeLineLabelCommonCfg {
   /**
    * 标签的样式属性
    */
-  style:INodeLineLabelCfgCommonStyle;
+  style: INodeLineLabelCfgCommonStyle;
 }
 
 /**
@@ -42,12 +43,28 @@ export interface ILineStyle extends INodeLineCommonStyle {
    */
   strokeOpacity: number;
 }
+/**
+ * 边的样式属性
+ */
+export class LineStyle implements ILineStyle {
+  lineWidth: number=2;
+  shadowColor!: string;
+  shadowBlur!: string;
+  shadowOffsetX!: number;
+  shadowOffsetY!: number;
+  stroke: string="#00B5FF";
+  lineAppendWidth: number=4;
+  endArrow: boolean=true;
+  strokeOpacity!: number;
+}
+
+
 
 /**
  * 线的Dto
  */
 
-export interface ILineDto extends INodeLineCommonPropertyDto{
+export interface ILineDto extends INodeLineCommonPropertyDto {
   /**
    * 标签文本 label 及其配置 labelCfg
    */
@@ -59,17 +76,36 @@ export interface ILineDto extends INodeLineCommonPropertyDto{
   /**
    * 起始点 id
    */
-  source:string,
+  source: string,
   /**
    * 结束点 id
    */
-  target:string,
+  target: string,
   /**
    * 边的起始节点上的锚点的索引值
    */
-  sourceAnchor:number,
+  sourceAnchor: number,
   /**
    * 边的终止节点上的锚点的索引值
    */
-  targetAnchor:number,
+  targetAnchor: number,
+  /**
+   * 线配置其他条件等等
+   */
+  proPerties: Object;
 }
+/**
+ * 线对象的实现
+ */
+export class LineDto implements ILineDto{
+  labelCfg!: ILineLabelCfg;
+  style: ILineStyle=new LineStyle();
+  source: string="";
+  target: string="";
+  sourceAnchor!: number;
+  targetAnchor!: number;
+  proPerties: Object={};
+  type: string="quadratic";
+  label: string="";
+  id: string=Guid.create().toString();
+} 

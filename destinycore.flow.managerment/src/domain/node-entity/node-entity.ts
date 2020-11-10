@@ -17,7 +17,7 @@ export class NodeStyle implements INodeStyle {
     shadowBlur!: string;
     shadowOffsetX!: number;
     shadowOffsetY!: number;
-    stroke: string="#00B5FF";
+    stroke: string = "#00B5FF";
 }
 /**
  * 节点的LabelCfg属性接口定义
@@ -29,7 +29,7 @@ export interface INodeLabelCfg extends INodeLineLabelCommonCfg {
     style: INodeLineLabelCfgCommonStyle;
 }
 /**
- * 节点样式属性
+ * 节点通用属性
  */
 export interface INodeDto extends INodeLineCommonPropertyDto {
 
@@ -58,10 +58,14 @@ export interface INodeDto extends INodeLineCommonPropertyDto {
      * 文本配置项
      */
     labelCfg: INodeLabelCfg;
+    /**
+     * 节点配置其他条件等等
+     */
+    proPerties: Object;
 }
 
 /**
- * 通用节点样式属性
+ * 通用节点属性
  */
 export class NodeDto implements INodeDto {
     style: INodeStyle = new NodeStyle();
@@ -80,8 +84,12 @@ export class NodeDto implements INodeDto {
         left: false,
         size: 12,
         fill: "#00B5FF",
-        stroke:"#00B5FF"
-    }
+        stroke: "#00B5FF"
+    };
+    /**
+     * 节点配置其他条件等等
+     */
+    proPerties: Object = {};
 }
 
 /**
