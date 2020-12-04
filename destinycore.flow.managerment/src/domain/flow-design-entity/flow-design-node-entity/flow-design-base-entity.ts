@@ -1,5 +1,6 @@
-import { IArrtsEntity } from './flow-design-attrbase-entity';
+import { IArrtsEntity } from '../flow-design-attrbase-entity';
 import { IEntity } from "@/sharad/baseentity/IEntity";
+import { IPorts } from '../flow-design-portsbase-entity';
 
 /**
  * 节点和边的基类
@@ -9,10 +10,10 @@ export interface IBaseEntity extends IEntity<string> {
    * 节点/边属性样式。
    */
   attrs: IArrtsEntity;
-//   /**
-//    * 子节点/边。
-//    */
-//   children: Array<string>;
+  //   /**
+  //    * 子节点/边。
+  //    */
+  //   children: Array<string>;
   /**
    * 节点/边关联的业务数据。
    */
@@ -44,19 +45,23 @@ export interface IBaseEntity extends IEntity<string> {
   /**
    * 横向坐标
    */
-  x:number;
+  x: number;
   /**
    * 纵向坐标
    */
-  y:number;
+  y: number;
   /**
    * 宽度
    */
-  width:number;
+  width: number;
   /**
    * 高度
    */
-  height:number;
+  height: number;
+  /**
+   * 链接桩数组
+   */
+  ports:IPorts
 }
 /**
  * markup 指定了渲染节点/边时使用的 SVG/HTML 片段

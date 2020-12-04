@@ -1,13 +1,12 @@
 import { Graph } from "@antv/x6";
 import { IBaseEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-base-entity";
 import { Vue } from "vue-class-component";
-import { Guid } from 'guid-typescript';
+
 export default class FlowDesignPanel extends Vue {
   private graph: any;
   private nodedata: Array<IBaseEntity> = [
-    //测试节点1
     {
-      id: "E7C2500E-4BE9-9699-1C3F-7E02DD5A9FD4",
+      id: "node1",
       attrs: {
         body: {
           fill: "#C1F1C5",
@@ -57,14 +56,13 @@ export default class FlowDesignPanel extends Vue {
           }
         },
         items: [
-          { id: "D1178DB3-98CE-0FA3-BB59-63DC755EF795", group: 'in', },
-          { id: 'A082D2FE-8673-71CE-9F77-4F4A69CDF28C', group: 'out', }
+          { id: 'port1', group: 'in', },
+          { id: 'port2', group: 'out', }
         ]
       }
     },
-    //测试节点2
     {
-      id: "47499123-2675-FE77-5D6F-A82B002A3949",
+      id: "node2",
       attrs: {
         body: {
           fill: "#C1F1C5",
@@ -86,107 +84,133 @@ export default class FlowDesignPanel extends Vue {
       y: 180, // Number，必选，节点位置的 y 值
       width: 80, // Number，可选，节点大小的 width 值
       height: 40, // Number，可选，节点大小的 height 值
-      ports: {
-        groups: {
-          in: {
-            attrs: {
-              circle: {
-                r: 6,
-                magnet: false,
-                stroke: '#31d0c6',
-                strokeWidth: 2,
-                fill: '#fff',
-              }
-            },
-            position: "left"
+      ports: [
+        {
+          id: "ceshis",
+          attrs: {
+            circle: {
+              r: 6,
+              magnet: true,
+              stroke: "#31d0c6",
+              strokeWidth: 2,
+              fill: '#fff',
+            }
           },
-          out: {
-            attrs: {
-              circle: {
-                r: 6,
-                magnet: true,
-                stroke: '#31d0c6',
-                strokeWidth: 2,
-                fill: '#fff',
-              },
-            },
-            position: 'right',
-          }
-        },
-        items: [
-          { id: "950B1597-3B15-D261-62A3-A052AB0634C3", group: 'in', },
-          { id: 'A0C7A17E-1312-595A-E9EC-6B671651BE50', group: 'out', }
-        ]
-      }
-    },
-    //测试节点3
-    {
-      id: "2A785D80-A8DA-00A7-268C-B93005624738",
-      attrs: {
-        body: {
-          fill: "#C1F1C5",
-          stroke: "#5F95FF",
-        },
-        label: {
-          fontSize: 12,
-          fill: "black",
-        },
-      },
-      data: { x: "" },
-      disposed: false,
-      label: "node2",
-      parent: "",
-      shape: "rect",
-      visible: true,
-      zIndex: 1,
-      x: 260, // Number，必选，节点位置的 x 值
-      y: 280, // Number，必选，节点位置的 y 值
-      width: 80, // Number，可选，节点大小的 width 值
-      height: 40, // Number，可选，节点大小的 height 值
-      ports: {
-        groups: {
-          in: {
-            attrs: {
-              circle: {
-                r: 6,
-                magnet: false,
-                stroke: '#31d0c6',
-                strokeWidth: 2,
-                fill: '#fff',
-              }
-            },
-            position: "left"
-          },
-          out: {
-            attrs: {
-              circle: {
-                r: 6,
-                magnet: true,
-                stroke: '#31d0c6',
-                strokeWidth: 2,
-                fill: '#fff',
-              },
-            },
-            position: 'right',
-          }
-        },
-        items: [
-          { id: "6E87D0E9-4F59-76C5-3054-AB34BA0D1DD1", group: 'in', },
-          { id: 'CDC5658B-80EB-195E-0072-4500576E4796', group: 'out', }
-        ]
-      }
+        }
+      ]
     },
   ];
   private graphdata: any = {
     // 节点
-    nodes: this.nodedata,
-    // // // 边
-    // edges: [
-    //   {
-    //     source: { cell: "E7C2500E-4BE9-9699-1C3F-7E02DD5A9FD4", port: "A082D2FE-8673-71CE-9F77-4F4A69CDF28C" }, // 源节点和链接桩 ID
-    //     target: { cell: "47499123-2675-FE77-5D6F-A82B002A3949", prot: "950B1597-3B15-D261-62A3-A052AB0634C3" }, // 目标节点 ID 和链接桩 ID
-    //   },
-    // ],
+    nodes: [
+      {
+        id: "node1",
+        attrs: {
+          body: {
+            fill: "#C1F1C5",
+            stroke: "#5F95FF",
+          },
+          label: {
+            fontSize: 12,
+            fill: "black",
+          },
+        },
+        data: { x: "" },
+        disposed: false,
+        label: "节点1",
+        parent: "",
+        shape: "rect",
+        visible: true,
+        zIndex: 1,
+        x: 40, // Number，必选，节点位置的 x 值
+        y: 40, // Number，必选，节点位置的 y 值
+        width: 80, // Number，可选，节点大小的 width 值
+        height: 40, // Number，可选，节点大小的 height 值
+        ports: {
+          groups: {
+            in: {
+              attrs: {
+                circle: {
+                  r: 6,
+                  magnet: false,
+                  stroke: '#31d0c6',
+                  strokeWidth: 2,
+                  fill: '#fff',
+                },
+              },
+              position: 'left',
+            },
+            out: {
+              attrs: {
+                circle: {
+                  r: 6,
+                  magnet: true,
+                  stroke: '#31d0c6',
+                  strokeWidth: 2,
+                  fill: '#fff',
+                },
+              },
+              position: 'right',
+            },
+          },
+          items: [
+            {
+              id: 'port1',
+              group: 'in',
+            },
+            {
+              id: 'port2',
+              group: 'out',
+            },
+          ]
+        }
+      },
+      {
+        id: "node2",
+        attrs: {
+          body: {
+            fill: "#C1F1C5",
+            stroke: "#5F95FF",
+          },
+          label: {
+            fontSize: 12,
+            fill: "black",
+          },
+        },
+        data: { x: "" },
+        disposed: false,
+        label: "node2",
+        parent: "",
+        shape: "rect",
+        visible: true,
+        zIndex: 1,
+        x: 160, // Number，必选，节点位置的 x 值
+        y: 180, // Number，必选，节点位置的 y 值
+        width: 80, // Number，可选，节点大小的 width 值
+        height: 40, // Number，可选，节点大小的 height 值
+        ports: [
+          {
+            id: "ceshis",
+            attrs: {
+              circle: {
+                r: 6,
+                magnet: true,
+                stroke: "#31d0c6",
+                strokeWidth: 2,
+                fill: '#fff',
+              }
+            },
+          }
+        ]
+      },
+    ],//this.nodedata,
+    // 边
+    edges: [
+      {
+        source: "node1", // String，必须，起始节点 id
+        target: "node2", // String，必须，目标节点 id
+      },
+    ],
   };
 
   mounted() {
@@ -207,36 +231,16 @@ export default class FlowDesignPanel extends Vue {
       this.graph.drawBackground({
         color: "#C0F4DA",
       });
-      this.graph.on("node:click", (nodecurren: any) => {
-        console.log("节点被单击了！！！！！！！asd a ！",nodecurren);
+      this.graph.on("node:click", (nodecurren: any, view: any) => {
         this.reset();
+        console.log(111, nodecurren.node)
         nodecurren.node.attr("body/stroke", "orange");
       });
-      this.graph.on("node:dblclick", (nodecurren: any) => {
-        console.log("节点被双击了！！！！！！！！",nodecurren);
-      });
-      // this.graph.on("edge:connected", (addedge: any) => {
-      //   debugger
-      //   console.log(addedge)
-      //   console.log(this.graph)
-      //   console.log("鼠标到锚点的事件！！！！！！！！");
-      // });
-      this.graph.on("cell:mouseup", (addedge: any) => {
-        console.log(addedge)
-        console.log(addedge.isNew)
-        if( typeof addedge.isNew=="undefined")
-        {
-          debugger
-          this.graph.removeEdge(addedge.edge)
-          console.log(this.graph)
-          console.log("鼠标抬起的事件！！！！！！！！");
-        }
-        else{
-          
-        }
+      this.graph.on("node:dblclick", (nodecurren: any, view: any) => {
+        console.log("被双击了！！！！！！！！");
+        // console.log(nodecurren.node);
       });
       this.graph.on('edge:click', (edgecurren: any) => {
-        console.log("单击了线！！！！！！！！",edgecurren);
         this.reset()
         edgecurren.edge.attr('line/stroke', 'orange')
         edgecurren.edge.prop('labels/0', {
