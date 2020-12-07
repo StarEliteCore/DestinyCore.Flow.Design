@@ -1,10 +1,11 @@
-import { Graph } from "@antv/x6";
+import { Edge, EdgeView, Graph, Shape,Addon } from "@antv/x6";
 import { Guid } from "guid-typescript";
 import { IBaseEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-base-entity";
 import { Vue } from "vue-class-component";
 
 export default class FlowDesignPanel extends Vue {
-  private graph: any;
+  private graph?: Graph;
+  private dnd?: Addon.Dnd;
   private nodedata: Array<IBaseEntity> = [
     //测试节点1
     {
@@ -208,33 +209,43 @@ export default class FlowDesignPanel extends Vue {
       this.graph.drawBackground({
         color: "#C0F4DA",
       });
+      /**
+       * 单击节点事件
+       */
       this.graph.on("node:click", (nodecurren: any) => {
         console.log("节点被单击了！！！！！！！asd a ！", nodecurren);
         this.reset();
         nodecurren.node.attr("body/stroke", "orange");
       });
+      /**
+       * 双击节点事件
+       */
       this.graph.on("node:dblclick", (nodecurren: any) => {
         console.log("节点被双击了！！！！！！！！", nodecurren);
       });
+      /**
+       * 线连接到锚点事件
+       */
       this.graph.on("edge:connected", (addedge: any) => {
         debugger;
         console.log(addedge);
         console.log(this.graph);
+        console.log(this.graph!.getEdges())
         console.log("鼠标到锚点的事件！！！！！！！！");
       });
-      this.graph.on("cell:mouseup", (addedge: any) => {
-        if (typeof addedge.edge !== "undefined") {
-          if (
-            typeof addedge.isNew == "undefined" &&
-            typeof addedge.edge.target.cell == "undefined" &&
-            typeof addedge.edge.target.prot == "undefined"
-          ) {
-            this.graph.removeEdge(addedge.edge);
-            console.log(this.graph);
-            console.log("鼠标抬起的事件！！！！！！！！");
-          }
+      /**
+       * 线鼠标抬起事件
+       */
+      this.graph.on("edge:mouseup", (addedge: any,view:EdgeView,edge:Edge) => {
+        // debugger
+        if(addedge.view.targetView === null){
+          this.graph!.removeEdge(addedge.edge.id)
+          console.log(this.graph!.getEdges())
         }
       });
+      /**
+       * 单击线事件
+       */
       this.graph.on("edge:click", (edgecurren: any) => {
         console.log("单击了线！！！！！！！！", edgecurren);
         this.reset();
@@ -247,15 +258,19 @@ export default class FlowDesignPanel extends Vue {
           },
         });
       });
-
+      /**
+       * 初始化画布节点或者线
+       */
       this.graph.fromJSON(this.graphdata);
+
+      this.dnd = new Addon.Dnd({ target: this.graph, animation: true })
       //  this.graph.addNode(this.nodetest)
     }
   }
   private reset() {
     // this.graph.drawBackground({ color: "#fff" });
-    const nodes = this.graph.getNodes();
-    const edges = this.graph.getEdges();
+    const nodes = this.graph!.getNodes();
+    const edges = this.graph!.getEdges();
 
     nodes.forEach((node: any) => {
       node.attr("body/stroke", "#5F95FF");
@@ -272,4 +287,56 @@ export default class FlowDesignPanel extends Vue {
       });
     });
   }
+  startDrag(e: any) {
+    const target = e.currentTarget
+    console.log(1111,target)
+		const type = target.getAttribute('data-type')
+		console.log(type);
+		let rect = new Shape.Rect({
+			width: 100,
+			height: 40,
+			attrs: {
+				label: {
+					text: 'Rect',
+					fill: '#6a6c8a',
+				},
+				body: {
+					stroke: '#31d0c6',
+					strokeWidth: 2,
+				},
+			},
+		});
+		const node =
+			type === 'rect'
+				? new Shape.Rect({
+					width: 80,
+					height: 40,
+					attrs: {
+						label: {
+							text: 'Rect',
+							fill: '#6a6c8a',
+						},
+						body: {
+							stroke: '#31d0c6',
+							strokeWidth: 2,
+						},
+					},
+				})
+				: new Shape.Circle({
+					width: 60,
+					height: 60,
+					attrs: {
+						label: {
+							text: 'Circle',
+							fill: '#6a6c8a',
+						},
+						body: {
+							stroke: '#31d0c6',
+							strokeWidth: 2,
+						},
+					},
+				})
+    this.dnd!.start(node, e as any)
+    console.log(this.graph!.getNodes())
+	}
 }
