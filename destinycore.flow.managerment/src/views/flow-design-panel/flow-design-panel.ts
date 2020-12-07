@@ -1,4 +1,5 @@
-import { Edge, EdgeView, Graph, Shape,Addon } from "@antv/x6";
+import { Addon, Edge, EdgeView, Graph, Shape } from "@antv/x6";
+
 import { Guid } from "guid-typescript";
 import { IBaseEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-base-entity";
 import { Vue } from "vue-class-component";
@@ -126,8 +127,8 @@ export default class FlowDesignPanel extends Vue {
       id: "2A785D80-A8DA-00A7-268C-B93005624738",
       attrs: {
         body: {
-          fill: "#C1F1C5",
-          stroke: "#5F95FF",
+          fill: "#E7FEEB",
+          stroke: "#9EFEAE",
         },
         label: {
           fontSize: 12,
@@ -206,9 +207,9 @@ export default class FlowDesignPanel extends Vue {
         width: 800,
         height: 600,
       });
-      this.graph.drawBackground({
-        color: "#C0F4DA",
-      });
+      // this.graph.drawBackground({
+      //   color: "#C0F4DA",
+      // });
       /**
        * 单击节点事件
        */
@@ -273,15 +274,15 @@ export default class FlowDesignPanel extends Vue {
     const edges = this.graph!.getEdges();
 
     nodes.forEach((node: any) => {
-      node.attr("body/stroke", "#5F95FF");
+      node.attr("body/stroke", "#E7FEEB");
     });
 
     edges.forEach((edge: any) => {
-      edge.attr("line/stroke", "#5F95FF");
+      edge.attr("line/stroke", "#E7FEEB");
       edge.prop("labels/0", {
         attrs: {
           body: {
-            stroke: "#5F95FF",
+            stroke: "#9EFEAE",
           },
         },
       });
