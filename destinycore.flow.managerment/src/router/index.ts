@@ -1,4 +1,5 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import { RouteRecordRaw, createRouter, createWebHashHistory, createWebHistory } from "vue-router";
+
 import Home from "@/views/flow-design-panel/flow-design-panel.vue";
 
 const routes: Array<RouteRecordRaw> = [
@@ -10,7 +11,7 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes
 });
 
