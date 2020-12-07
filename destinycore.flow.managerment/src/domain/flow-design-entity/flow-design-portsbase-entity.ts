@@ -1,5 +1,6 @@
-import { IEntity } from '@/sharad/baseentity/IEntity';
 import { IFill, IStroke } from './flow-design-attrbase-entity';
+
+import { IEntity } from '@/sharad/baseentity/IEntity';
 
 export interface IPorts  {
     /**

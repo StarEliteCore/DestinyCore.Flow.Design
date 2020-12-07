@@ -1,7 +1,8 @@
 import { Graph } from "@antv/x6";
+import { Guid } from "guid-typescript";
 import { IBaseEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-base-entity";
 import { Vue } from "vue-class-component";
-import { Guid } from 'guid-typescript';
+
 export default class FlowDesignPanel extends Vue {
   private graph: any;
   private nodedata: Array<IBaseEntity> = [
@@ -36,31 +37,31 @@ export default class FlowDesignPanel extends Vue {
               circle: {
                 r: 6,
                 magnet: false,
-                stroke: '#31d0c6',
+                stroke: "#31d0c6",
                 strokeWidth: 2,
-                fill: '#fff',
-              }
+                fill: "#fff",
+              },
             },
-            position: "left"
+            position: "left",
           },
           out: {
             attrs: {
               circle: {
                 r: 6,
                 magnet: true,
-                stroke: '#31d0c6',
+                stroke: "#31d0c6",
                 strokeWidth: 2,
-                fill: '#fff',
+                fill: "#fff",
               },
             },
-            position: 'right',
-          }
+            position: "right",
+          },
         },
         items: [
-          { id: "D1178DB3-98CE-0FA3-BB59-63DC755EF795", group: 'in', },
-          { id: 'A082D2FE-8673-71CE-9F77-4F4A69CDF28C', group: 'out', }
-        ]
-      }
+          { id: "D1178DB3-98CE-0FA3-BB59-63DC755EF795", group: "in" },
+          { id: "A082D2FE-8673-71CE-9F77-4F4A69CDF28C", group: "out" },
+        ],
+      },
     },
     //测试节点2
     {
@@ -93,31 +94,31 @@ export default class FlowDesignPanel extends Vue {
               circle: {
                 r: 6,
                 magnet: false,
-                stroke: '#31d0c6',
+                stroke: "#31d0c6",
                 strokeWidth: 2,
-                fill: '#fff',
-              }
+                fill: "#fff",
+              },
             },
-            position: "left"
+            position: "left",
           },
           out: {
             attrs: {
               circle: {
                 r: 6,
                 magnet: true,
-                stroke: '#31d0c6',
+                stroke: "#31d0c6",
                 strokeWidth: 2,
-                fill: '#fff',
+                fill: "#fff",
               },
             },
-            position: 'right',
-          }
+            position: "right",
+          },
         },
         items: [
-          { id: "950B1597-3B15-D261-62A3-A052AB0634C3", group: 'in', },
-          { id: 'A0C7A17E-1312-595A-E9EC-6B671651BE50', group: 'out', }
-        ]
-      }
+          { id: "950B1597-3B15-D261-62A3-A052AB0634C3", group: "in" },
+          { id: "A0C7A17E-1312-595A-E9EC-6B671651BE50", group: "out" },
+        ],
+      },
     },
     //测试节点3
     {
@@ -150,31 +151,31 @@ export default class FlowDesignPanel extends Vue {
               circle: {
                 r: 6,
                 magnet: false,
-                stroke: '#31d0c6',
+                stroke: "#31d0c6",
                 strokeWidth: 2,
-                fill: '#fff',
-              }
+                fill: "#fff",
+              },
             },
-            position: "left"
+            position: "left",
           },
           out: {
             attrs: {
               circle: {
                 r: 6,
                 magnet: true,
-                stroke: '#31d0c6',
+                stroke: "#31d0c6",
                 strokeWidth: 2,
-                fill: '#fff',
+                fill: "#fff",
               },
             },
-            position: 'right',
-          }
+            position: "right",
+          },
         },
         items: [
-          { id: "6E87D0E9-4F59-76C5-3054-AB34BA0D1DD1", group: 'in', },
-          { id: 'CDC5658B-80EB-195E-0072-4500576E4796', group: 'out', }
-        ]
-      }
+          { id: "6E87D0E9-4F59-76C5-3054-AB34BA0D1DD1", group: "in" },
+          { id: "CDC5658B-80EB-195E-0072-4500576E4796", group: "out" },
+        ],
+      },
     },
   ];
   private graphdata: any = {
@@ -200,7 +201,7 @@ export default class FlowDesignPanel extends Vue {
           size: 10, // 网格大小 10px
           visible: true, // 绘制网格，默认绘制 dot 类型网格
         },
-        clickThreshold: 1,//当鼠标移动次数超过指定的数字时，将不触发鼠标点击事件。
+        clickThreshold: 1, //当鼠标移动次数超过指定的数字时，将不触发鼠标点击事件。
         width: 800,
         height: 600,
       });
@@ -208,50 +209,47 @@ export default class FlowDesignPanel extends Vue {
         color: "#C0F4DA",
       });
       this.graph.on("node:click", (nodecurren: any) => {
-        console.log("节点被单击了！！！！！！！asd a ！",nodecurren);
+        console.log("节点被单击了！！！！！！！asd a ！", nodecurren);
         this.reset();
         nodecurren.node.attr("body/stroke", "orange");
       });
       this.graph.on("node:dblclick", (nodecurren: any) => {
-        console.log("节点被双击了！！！！！！！！",nodecurren);
+        console.log("节点被双击了！！！！！！！！", nodecurren);
       });
-      // this.graph.on("edge:connected", (addedge: any) => {
-      //   debugger
-      //   console.log(addedge)
-      //   console.log(this.graph)
-      //   console.log("鼠标到锚点的事件！！！！！！！！");
-      // });
+      this.graph.on("edge:connected", (addedge: any) => {
+        debugger;
+        console.log(addedge);
+        console.log(this.graph);
+        console.log("鼠标到锚点的事件！！！！！！！！");
+      });
       this.graph.on("cell:mouseup", (addedge: any) => {
-        console.log(addedge)
-        console.log(addedge.isNew)
-        if( typeof addedge.isNew=="undefined")
-        {
-          debugger
-          this.graph.removeEdge(addedge.edge)
-          console.log(this.graph)
-          console.log("鼠标抬起的事件！！！！！！！！");
-        }
-        else{
-          
+        if (typeof addedge.edge !== "undefined") {
+          if (
+            typeof addedge.isNew == "undefined" &&
+            typeof addedge.edge.target.cell == "undefined" &&
+            typeof addedge.edge.target.prot == "undefined"
+          ) {
+            this.graph.removeEdge(addedge.edge);
+            console.log(this.graph);
+            console.log("鼠标抬起的事件！！！！！！！！");
+          }
         }
       });
-      this.graph.on('edge:click', (edgecurren: any) => {
-        console.log("单击了线！！！！！！！！",edgecurren);
-        this.reset()
-        edgecurren.edge.attr('line/stroke', 'orange')
-        edgecurren.edge.prop('labels/0', {
+      this.graph.on("edge:click", (edgecurren: any) => {
+        console.log("单击了线！！！！！！！！", edgecurren);
+        this.reset();
+        edgecurren.edge.attr("line/stroke", "orange");
+        edgecurren.edge.prop("labels/0", {
           attrs: {
             body: {
-              stroke: 'orange',
+              stroke: "orange",
             },
           },
-        })
-      })
+        });
+      });
 
       this.graph.fromJSON(this.graphdata);
       //  this.graph.addNode(this.nodetest)
-
-
     }
   }
   private reset() {
