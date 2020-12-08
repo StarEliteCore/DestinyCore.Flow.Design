@@ -19,6 +19,10 @@ export interface IStroke{
      * 边框颜色
      */
     stroke:string,
+    /**
+     * 边框宽度
+     */
+    strokeWidth:number;
 }
 /**
  * Fill  Public Attribute
@@ -28,6 +32,12 @@ export interface IFill{
      * 背景色
      */
     fill:string,
+}
+export interface IVisibility{
+    /**
+     * 连接桩是否显示
+     */
+    visibility:string,
 }
 
 /**

@@ -1,8 +1,8 @@
 <template>
   <div>
     <div>
-      <Button draggable="true" data-type="rect" @mousedown.prevent="startDrag">Rect</Button>
-      <Button draggable="true" data-type="circle" @mousedown.prevent="startDrag">Circle</Button>
+      <a-button type="primary" draggable="true" data-type="rect" @mousedown.prevent="startDrag">Rect</a-button>
+      <a-button type="primary" draggable="true" data-type="circle" @mousedown.prevent="startDrag">Circle</a-button>
     </div>
     <div>
 <div id="container"></div>

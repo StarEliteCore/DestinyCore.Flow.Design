@@ -17,11 +17,7 @@ export interface IBaseEntity extends IEntity<string> {
   /**
    * 节点/边关联的业务数据。
    */
-  data: any;
-  /**
-   * 是否可选
-   */
-  disposed: boolean;
+  data: Object;
   /**
    * 名称
    */
@@ -38,10 +34,6 @@ export interface IBaseEntity extends IEntity<string> {
    * 节点/边是否可见。
    */
   visible: boolean;
-  /**
-   * 节点/边在画布中的层级，默认根据节点/边添加顺序自动确定。
-   */
-  zIndex: number;
   /**
    * 横向坐标
    */

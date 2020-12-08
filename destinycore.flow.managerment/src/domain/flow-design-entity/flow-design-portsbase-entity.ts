@@ -1,4 +1,4 @@
-import { IFill, IStroke } from './flow-design-attrbase-entity';
+import { IFill, IStroke, IVisibility } from './flow-design-attrbase-entity';
 
 import { IEntity } from '@/sharad/baseentity/IEntity';
 
@@ -50,7 +50,7 @@ export interface IPortsArrts {
 /**
  * 锚点属性定义
  */
-export interface IPortsArrtCircle extends IFill, IStroke {
+export interface IPortsArrtCircle extends IFill, IStroke,IVisibility{
     /**
      * 
      */
@@ -59,10 +59,6 @@ export interface IPortsArrtCircle extends IFill, IStroke {
      * 是否开启磁吸
      */
     magnet: boolean;
-    /**
-     * 宽度
-     */
-    strokeWidth: number,
 }
 /**
  * 分组关系
