@@ -2,11 +2,15 @@ import { Addon, Edge, EdgeView, FunctionExt, Graph, Shape } from "@antv/x6";
 
 import { Guid } from "guid-typescript";
 import { IBaseEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-base-entity";
-import { Vue } from "vue-class-component";
 import { Node } from "@antv/x6/lib/model/node"
+import { Vue } from "vue-class-component";
+
 export default class FlowDesignPanel extends Vue {
   private graph?: Graph;
   private dnd?: Addon.Dnd;
+  private ModalText:string= 'Content of the modal';
+  private visible:boolean= true;
+  private confirmLoading:boolean= false;
   //#region 
 
   // private nodedata: Array<IBaseEntity> = [
@@ -293,7 +297,8 @@ export default class FlowDesignPanel extends Vue {
        * 线连接到锚点事件
        */
       this.graph.on("edge:connected", (addedge: any) => {
-        console.log(addedge);
+        console.log();
+        addedge.edge.attrs.line.stroke="#31d0c6";
         console.log(this.graph);
         console.log(this.graph!.getNodes())
         console.log("鼠标到锚点的事件！！！！！！！！");
@@ -457,7 +462,7 @@ export default class FlowDesignPanel extends Vue {
               in: {
                 attrs: {
                   circle: {
-                    r: 3,
+                    r: 4,
                     magnet: true,
                     stroke: "#31d0c6",
                     strokeWidth: 2,
@@ -510,7 +515,7 @@ export default class FlowDesignPanel extends Vue {
               in: {
                 attrs: {
                   circle: {
-                    r: 6,
+                    r: 4,
                     magnet: true,
                     stroke: "#31d0c6",
                     strokeWidth: 2,
@@ -523,12 +528,12 @@ export default class FlowDesignPanel extends Vue {
               out: {
                 attrs: {
                   circle: {
-                    r: 6,
+                    r: 3,
                     magnet: true,
                     stroke: "#31d0c6",
                     strokeWidth: 2,
                     fill: "#fff",
-                    visibility: "visible"
+                    visibility: "hidden"
                   },
                 },
                 position: "right",
