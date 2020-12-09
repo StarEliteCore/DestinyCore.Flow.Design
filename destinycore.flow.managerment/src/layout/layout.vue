@@ -6,7 +6,7 @@
         Header
       </a-layout-header>
       <a-layout-content class="main-app-layout__content">
-        <router-view v-if="!loading" class="admin-layout_content"></router-view>
+        <router-view  class="admin-layout_content"></router-view>
       </a-layout-content>
     </a-layout>
   </a-layout>

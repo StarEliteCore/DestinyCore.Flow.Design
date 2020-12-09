@@ -1,11 +1,7 @@
-import { Addon, Edge, EdgeView, FunctionExt, Graph, Shape } from "@antv/x6";
+import { Addon, Edge, EdgeView, Graph, Shape } from "@antv/x6";
 
 import { Guid } from "guid-typescript";
-import { IBaseEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
-import { Node } from "@antv/x6/lib/model/node"
 import { Vue } from "vue-class-component";
-import { create } from '@/sharad/destinycoreIoc/destinycoreIocFactory';
-import TestA from '@/domain/flow-design-entity/services/testA';
 
 export default class FlowDesignPanel extends Vue {
   constructor()
@@ -14,9 +10,6 @@ export default class FlowDesignPanel extends Vue {
   }
   private graph?: Graph;
   private dnd?: Addon.Dnd;
-  private ModalText: string = 'Content of the modal';
-  private visible: boolean = true;
-  private confirmLoading: boolean = false;
   //#region 
 
   // private nodedata: Array<IBaseEntity> = [
@@ -262,8 +255,7 @@ export default class FlowDesignPanel extends Vue {
   // };
   //#endregion
   mounted() {
-debugger
-    let a= create(TestA)
+    // let a= create(TestA)
 
     /**
      * 设置Edge默认样式及通用属性
