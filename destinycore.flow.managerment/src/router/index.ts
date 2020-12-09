@@ -6,10 +6,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    redirect: "/home-page",
+    component: () => import("@/layout/layout.vue"),
+    children: [
+      {
+        path: '/home-page',
+        name: "设计器",
+        component: Home,
+      }
+    ]
   },
 ];
-
 const router = createRouter({
   history: createWebHistory(),
   routes

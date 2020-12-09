@@ -1,16 +1,22 @@
 import { Addon, Edge, EdgeView, FunctionExt, Graph, Shape } from "@antv/x6";
 
 import { Guid } from "guid-typescript";
-import { IBaseEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-base-entity";
+import { IBaseEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
 import { Node } from "@antv/x6/lib/model/node"
 import { Vue } from "vue-class-component";
+import { create } from '@/sharad/destinycoreIoc/destinycoreIocFactory';
+import TestA from '@/domain/flow-design-entity/services/testA';
 
 export default class FlowDesignPanel extends Vue {
+  constructor()
+  {
+    super()
+  }
   private graph?: Graph;
   private dnd?: Addon.Dnd;
-  private ModalText:string= 'Content of the modal';
-  private visible:boolean= true;
-  private confirmLoading:boolean= false;
+  private ModalText: string = 'Content of the modal';
+  private visible: boolean = true;
+  private confirmLoading: boolean = false;
   //#region 
 
   // private nodedata: Array<IBaseEntity> = [
@@ -256,29 +262,147 @@ export default class FlowDesignPanel extends Vue {
   // };
   //#endregion
   mounted() {
+debugger
+    let a= create(TestA)
+
     /**
-     * 设置默认线的类型
+     * 设置Edge默认样式及通用属性
      */
     Shape.Edge.config(
+      // Shape
       {
         router: "manhattan",
       }
     )
+    /**
+     * 设置Rect默认样式及通用属性
+     */
+    Shape.Rect.config(
+      {
+        attrs: {
+          body: {
+            fill: "#C1F1C5",
+            stroke: "#5F95FF",
+          },
+          label: {
+            fontSize: 12,
+            fill: "black",
+          },
+        },
+        visible: true,
+        zIndex: 1,
+        x: 40, // Number，必选，节点位置的 x 值
+        y: 40, // Number，必选，节点位置的 y 值
+        width: 80, // Number，可选，节点大小的 width 值
+        height: 40, // Number，可选，节点大小的 height 值
+        ports: {
+          groups: {
+            in: {
+              attrs: {
+                circle: {
+                  r: 6,
+                  magnet: false,
+                  stroke: "#31d0c6",
+                  strokeWidth: 2,
+                  fill: "#fff",
+                },
+              },
+              position: "left",
+            },
+            out: {
+              attrs: {
+                circle: {
+                  r: 6,
+                  magnet: true,
+                  stroke: "#31d0c6",
+                  strokeWidth: 2,
+                  fill: "#fff",
+                },
+              },
+              position: "right",
+            },
+          },
+          items: [
+            { id: Guid.create(), group: "in" },
+            { id: Guid.create(), group: "out" },
+          ],
+        },
+      }
+    )
+    /**
+     * 设置Circle默认样式及通用属性
+     */
+    Shape.Circle.config(
+      {
+        attrs: {
+          label: {
+            fontSize: 12,
+            fill: 'black',
+          },
+          body: {
+            stroke: '#ffc26d',
+            strokeWidth: 1,
+            fill: "#fff3ea"
+          },
+        },
+        visible: true,
+        zIndex: 1,
+        x: 40, // Number，必选，节点位置的 x 值
+        y: 40, // Number，必选，节点位置的 y 值
+        width: 50, // Number，可选，节点大小的 width 值
+        height: 50, // Number，可选，节点大小的 height 值
+        parent: "",//
+        ports: {
+          groups: {
+            out: {
+              attrs: {
+                circle: {
+                  r: 3,
+                  magnet: true,
+                  stroke: "#31d0c6",
+                  strokeWidth: 2,
+                  fill: "#fff",
+                  visibility: "hidden"
+                },
+              },
+              position: "right",
+            },
+          },
+          items: [
+            { id: Guid.create().toString(), group: "out" },
+          ],
+        },
+      }
+    )
     const contai = document.getElementById("container");
-    if (contai != null) {
+    const containerHtml = document.getElementById("graph-panel");
+    const width: number = containerHtml !== null ? containerHtml.clientWidth : 1450;
+    const height: number = containerHtml !== null ? containerHtml.clientHeight : 750;
+    console.log("子组件")
+    console.log(width);
+    if (contai != null && typeof width !== null && height != null) {
       this.graph = new Graph({
         container: contai,
         grid: {
           size: 10, // 网格大小 10px
           visible: true, // 绘制网格，默认绘制 dot 类型网格
+          type: 'mesh',
+          args: {
+            color: '#ddd', // 网格线/点颜色
+            thickness: 1, // 网格线宽度/网格点大小
+          },
         },
         clickThreshold: 1, //当鼠标移动次数超过指定的数字时，将不触发鼠标点击事件。
-        width: 800,
-        height: 600,
+        width: width,
+        height: height,
+        snapline: {
+          enabled: true,
+        },
       });
-      // this.graph.drawBackground({
-      //   color: "#C0F4DA",
-      // });
+      this.graph.drawBackground({
+        color: "#f0edc1",
+      });
+      this.graph.resize();
       /**
        * 单击节点事件
        */
@@ -298,11 +422,11 @@ export default class FlowDesignPanel extends Vue {
        */
       this.graph.on("edge:connected", (addedge: any) => {
         console.log();
-        addedge.edge.attrs.line.stroke="#31d0c6";
+        addedge.edge.attrs.line.stroke = "#31d0c6";
         console.log(this.graph);
         console.log(this.graph!.getNodes())
         console.log("鼠标到锚点的事件！！！！！！！！");
-      });      
+      });
       /**
        * 线鼠标抬起事件
        */
@@ -349,7 +473,7 @@ export default class FlowDesignPanel extends Vue {
             nodecurren.node.setPortProp(_item.id!, ['attrs', 'circle'], { magnet: false });
           }
           if (_item.group === "out") {
-             nodecurren.node.setPortProp(_item.id!, ['attrs', 'circle'], { style: { visibility: "visible" } })//鼠标移入显示链接桩
+            nodecurren.node.setPortProp(_item.id!, ['attrs', 'circle'], { style: { visibility: "visible" } })//鼠标移入显示链接桩
           }
         })
       })
@@ -364,7 +488,7 @@ export default class FlowDesignPanel extends Vue {
             nodecurren.node.setPortProp(_item.id!, ['attrs', 'circle'], { magnet: true });
           }
           if (_item.group === "out") {
-             nodecurren.node.setPortProp(_item.id!, ['attrs', 'circle'], { style: { visibility: "hidden" } })//鼠标移除隐藏链接桩
+            nodecurren.node.setPortProp(_item.id!, ['attrs', 'circle'], { style: { visibility: "hidden" } })//鼠标移除隐藏链接桩
           }
         })
       })
@@ -393,7 +517,7 @@ export default class FlowDesignPanel extends Vue {
   //     if(ports[i].getAttribute("port-group")==="in")
   //     {
   //       ports[i].style.visibility = show ? 'visible' : 'hidden';
-        
+
   //       // debugger
   //       ports[i].setAttribute("magnet","true");
   //       ports[i].setAttribute("visibility","visible");
@@ -441,51 +565,8 @@ export default class FlowDesignPanel extends Vue {
       type === 'rect'
         ? new Shape.Rect({
           id: Guid.create.toString(),
-          width: 80,
-          height: 40,
           label: "任务节点",
-          attrs: {
-            label: {
-              fontSize: 12,
-              fill: 'black',
-            },
-            body: {
-              stroke: '#94d2fe',
-              strokeWidth: 1,
-              fill: "#e6f6fd"
-            },
-          },
-          visible: true,
-          parent: "",//
           ports: {
-            groups: {
-              in: {
-                attrs: {
-                  circle: {
-                    r: 4,
-                    magnet: true,
-                    stroke: "#31d0c6",
-                    strokeWidth: 2,
-                    fill: "#fff",
-                    visibility: "visible"
-                  },
-                },
-                position: "left",
-              },
-              out: {
-                attrs: {
-                  circle: {
-                    r: 3,
-                    magnet: true,
-                    stroke: "#31d0c6",
-                    strokeWidth: 2,
-                    fill: "#fff",
-                    visibility: "hidden"
-                  },
-                },
-                position: "right",
-              },
-            },
             items: [
               { id: Guid.create().toString(), group: "in" },
               { id: Guid.create().toString(), group: "out" },
@@ -494,53 +575,9 @@ export default class FlowDesignPanel extends Vue {
         })
         : new Shape.Circle({
           id: Guid.create.toString(),
-          width: 80,
-          height: 40,
           label: "开始节点",
-          attrs: {
-            label: {
-              fontSize: 12,
-              fill: 'black',
-            },
-            body: {
-              stroke: '#ffc26d',
-              strokeWidth: 1,
-              fill: "#fff3ea"
-            },
-          },
-          visible: true,
-          parent: "",//
           ports: {
-            groups: {
-              in: {
-                attrs: {
-                  circle: {
-                    r: 4,
-                    magnet: true,
-                    stroke: "#31d0c6",
-                    strokeWidth: 2,
-                    fill: "#fff",
-                    visibility: "visible"
-                  },
-                },
-                position: "left",
-              },
-              out: {
-                attrs: {
-                  circle: {
-                    r: 3,
-                    magnet: true,
-                    stroke: "#31d0c6",
-                    strokeWidth: 2,
-                    fill: "#fff",
-                    visibility: "hidden"
-                  },
-                },
-                position: "right",
-              },
-            },
             items: [
-              { id: Guid.create().toString(), group: "in" },
               { id: Guid.create().toString(), group: "out" },
             ],
           },

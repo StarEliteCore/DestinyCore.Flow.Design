@@ -1,5 +1,5 @@
 import { Graph } from "@antv/x6";
-import { IBaseEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-base-entity";
+import { IBaseEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
 import { Vue } from "vue-class-component";
 
 export default class FlowDesignPanel extends Vue {
