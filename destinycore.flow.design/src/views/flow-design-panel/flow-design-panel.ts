@@ -1,377 +1,41 @@
+import { edgeBaseConfig } from '@/domain/flow-design-config/edgeconfig';
+import { circleNodeBaseConfig, rectNodeBaseConfig } from '@/domain/flow-design-config/nodeconfig';
+import { INodeEntity } from '@/domain/flow-design-entity/flow-design-node-entity/flow-design-node-entity';
 import { Addon, Edge, EdgeView, Graph, Shape } from "@antv/x6";
-
+import { Node } from "@antv/x6/lib/model"
 import { Guid } from "guid-typescript";
-import { Vue } from "vue-class-component";
-
+import { Component, Ref, Vue } from "vue-property-decorator";
+import { IPorts } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-portsbase-entity"
+@Component({
+  name: "FlowDesignPanel"
+})
 export default class FlowDesignPanel extends Vue {
-  constructor()
-  {
-    super()
-  }
+  private nodeArray: Array<INodeEntity> = [];
   private graph?: Graph;
   private dnd?: Addon.Dnd;
-  //#region 
-
-  // private nodedata: Array<IBaseEntity> = [
-  //   //测试节点1
-  //   {
-  //     id: "E7C2500E-4BE9-9699-1C3F-7E02DD5A9FD4",
-  //     attrs: {
-  //       body: {
-  //         fill: "#C1F1C5",
-  //         stroke: "#5F95FF",
-  //       },
-  //       label: {
-  //         fontSize: 12,
-  //         fill: "black",
-  //       },
-  //     },
-  //     data: { x: "" },
-  //     disposed: false,
-  //     label: "节点1",
-  //     parent: "",
-  //     shape: "rect",
-  //     visible: true,
-  //     zIndex: 1,
-  //     x: 40, // Number，必选，节点位置的 x 值
-  //     y: 40, // Number，必选，节点位置的 y 值
-  //     width: 80, // Number，可选，节点大小的 width 值
-  //     height: 40, // Number，可选，节点大小的 height 值
-  //     ports: {
-  //       groups: {
-  //         in: {
-  //           attrs: {
-  //             circle: {
-  //               r: 6,
-  //               magnet: false,
-  //               stroke: "#31d0c6",
-  //               strokeWidth: 2,
-  //               fill: "#fff",
-  //             },
-  //           },
-  //           position: "left",
-  //         },
-  //         out: {
-  //           attrs: {
-  //             circle: {
-  //               r: 6,
-  //               magnet: true,
-  //               stroke: "#31d0c6",
-  //               strokeWidth: 2,
-  //               fill: "#fff",
-  //             },
-  //           },
-  //           position: "right",
-  //         },
-  //       },
-  //       items: [
-  //         { id: "D1178DB3-98CE-0FA3-BB59-63DC755EF795", group: "in" },
-  //         { id: "A082D2FE-8673-71CE-9F77-4F4A69CDF28C", group: "out" },
-  //       ],
-  //     },
-  //   },
-  //   //测试节点2
-  //   {
-  //     id: "47499123-2675-FE77-5D6F-A82B002A3949",
-  //     attrs: {
-  //       body: {
-  //         fill: "#C1F1C5",
-  //         stroke: "#5F95FF",
-  //       },
-  //       label: {
-  //         fontSize: 12,
-  //         fill: "black",
-  //       },
-  //     },
-  //     data: { x: "" },
-  //     disposed: false,
-  //     label: "node2",
-  //     parent: "",
-  //     shape: "rect",
-  //     visible: true,
-  //     zIndex: 1,
-  //     x: 160, // Number，必选，节点位置的 x 值
-  //     y: 180, // Number，必选，节点位置的 y 值
-  //     width: 80, // Number，可选，节点大小的 width 值
-  //     height: 40, // Number，可选，节点大小的 height 值
-  //     ports: {
-  //       groups: {
-  //         in: {
-  //           attrs: {
-  //             circle: {
-  //               r: 6,
-  //               magnet: false,
-  //               stroke: "#31d0c6",
-  //               strokeWidth: 2,
-  //               fill: "#fff",
-  //             },
-  //           },
-  //           position: "left",
-  //         },
-  //         out: {
-  //           attrs: {
-  //             circle: {
-  //               r: 6,
-  //               magnet: true,
-  //               stroke: "#31d0c6",
-  //               strokeWidth: 2,
-  //               fill: "#fff",
-  //             },
-  //           },
-  //           position: "right",
-  //         },
-  //       },
-  //       items: [
-  //         { id: "950B1597-3B15-D261-62A3-A052AB0634C3", group: "in" },
-  //         { id: "A0C7A17E-1312-595A-E9EC-6B671651BE50", group: "out" },
-  //       ],
-  //     },
-  //   },
-  //   //测试节点3
-  //   {
-  //     id: "2A785D80-A8DA-00A7-268C-B93005624738",
-  //     attrs: {
-  //       body: {
-  //         fill: "#E7FEEB",
-  //         stroke: "#9EFEAE",
-  //       },
-  //       label: {
-  //         fontSize: 12,
-  //         fill: "black",
-  //       },
-  //     },
-  //     data: { x: "" },
-  //     disposed: false,
-  //     label: "node2",
-  //     parent: "",
-  //     shape: "rect",
-  //     visible: true,
-  //     zIndex: 1,
-  //     x: 260, // Number，必选，节点位置的 x 值
-  //     y: 280, // Number，必选，节点位置的 y 值
-  //     width: 80, // Number，可选，节点大小的 width 值
-  //     height: 40, // Number，可选，节点大小的 height 值
-  //     ports: {
-  //       groups: {
-  //         in: {
-  //           attrs: {
-  //             circle: {
-  //               r: 6,
-  //               magnet: false,
-  //               stroke: "#31d0c6",
-  //               strokeWidth: 2,
-  //               fill: "#fff",
-  //             },
-  //           },
-  //           position: "left",
-  //         },
-  //         out: {
-  //           attrs: {
-  //             circle: {
-  //               r: 6,
-  //               magnet: true,
-  //               stroke: "#31d0c6",
-  //               strokeWidth: 2,
-  //               fill: "#fff",
-  //             },
-  //           },
-  //           position: "right",
-  //         },
-  //       },
-  //       items: [
-  //         { id: "6E87D0E9-4F59-76C5-3054-AB34BA0D1DD1", group: "in" },
-  //         { id: "CDC5658B-80EB-195E-0072-4500576E4796", group: "out" },
-  //       ],
-  //     },
-  //   },
-  // ];
-  // private nodedatamodel: IBaseEntity = {
-  //   id: "E7C2500E-4BE9-9699-1C3F-7E08DD5A9FD4",
-  //   attrs: {
-  //     body: {
-  //       fill: "#C1F1C5",
-  //       stroke: "#5F95FF",
-  //     },
-  //     label: {
-  //       fontSize: 12,
-  //       fill: "black",
-  //     },
-  //   },
-  //   data: { x: "" },
-  //   disposed: false,
-  //   label: "节点1",
-  //   parent: "",
-  //   shape: "rect",
-  //   visible: true,
-  //   zIndex: 1,
-  //   x: 200, // Number，必选，节点位置的 x 值
-  //   y: 200, // Number，必选，节点位置的 y 值
-  //   width: 80, // Number，可选，节点大小的 width 值
-  //   height: 40, // Number，可选，节点大小的 height 值
-  //   ports: {
-  //     groups: {
-  //       in: {
-  //         attrs: {
-  //           circle: {
-  //             r: 6,
-  //             magnet: false,
-  //             stroke: "#31d0c6",
-  //             strokeWidth: 2,
-  //             fill: "#fff",
-  //           },
-  //         },
-  //         position: "left",
-  //       },
-  //       out: {
-  //         attrs: {
-  //           circle: {
-  //             r: 6,
-  //             magnet: true,
-  //             stroke: "#31d0c6",
-  //             strokeWidth: 2,
-  //             fill: "#fff",
-  //           },
-  //         },
-  //         position: "right",
-  //       },
-  //     },
-  //     items: [
-  //       { id: "D1178DB3-98CE-0FA3-BB59-63DC755EF895", group: "in" },
-  //       { id: "A082D2FE-8673-71CE-9F77-4F4A69CDF28C", group: "out" },
-  //     ],
-  //   },
-  // };
-
-  // private graphdata: any = {
-  //   //节点
-  //   nodes: this.nodedata,
-  //   // // 边
-  //   edges: [
-  //     {
-  //       source: { cell: "E7C2500E-4BE9-9699-1C3F-7E02DD5A9FD4", port: "A082D2FE-8673-71CE-9F77-4F4A69CDF28C" }, // 源节点和链接桩 ID
-  //       target: { cell: "47499123-2675-FE77-5D6F-A82B002A3949", prot: "950B1597-3B15-D261-62A3-A052AB0634C3" }, // 目标节点 ID 和链接桩 ID
-  //     },
-  //   ],
-  // };
-  //#endregion
+  private isgra: boolean = false;
+  @Ref("refMiniMapContainer")
+  private minimapContainer!: HTMLDivElement;
   mounted() {
     // let a= create(TestA)
 
     /**
      * 设置Edge默认样式及通用属性
      */
-    Shape.Edge.config(
-      // Shape
-      {
-        router: "manhattan",
-      }
-    )
+    Shape.Edge.config(edgeBaseConfig);
     /**
      * 设置Rect默认样式及通用属性
      */
-    Shape.Rect.config(
-      {
-        attrs: {
-          body: {
-            fill: "#C1F1C5",
-            stroke: "#5F95FF",
-          },
-          label: {
-            fontSize: 12,
-            fill: "black",
-          },
-        },
-        visible: true,
-        zIndex: 1,
-        x: 40, // Number，必选，节点位置的 x 值
-        y: 40, // Number，必选，节点位置的 y 值
-        width: 80, // Number，可选，节点大小的 width 值
-        height: 40, // Number，可选，节点大小的 height 值
-        ports: {
-          groups: {
-            in: {
-              attrs: {
-                circle: {
-                  r: 6,
-                  magnet: false,
-                  stroke: "#31d0c6",
-                  strokeWidth: 2,
-                  fill: "#fff",
-                },
-              },
-              position: "left",
-            },
-            out: {
-              attrs: {
-                circle: {
-                  r: 6,
-                  magnet: true,
-                  stroke: "#31d0c6",
-                  strokeWidth: 2,
-                  fill: "#fff",
-                },
-              },
-              position: "right",
-            },
-          },
-          items: [
-            { id: Guid.create(), group: "in" },
-            { id: Guid.create(), group: "out" },
-          ],
-        },
-      }
-    )
+    Shape.Rect.config(rectNodeBaseConfig);
     /**
      * 设置Circle默认样式及通用属性
      */
-    Shape.Circle.config(
-      {
-        attrs: {
-          label: {
-            fontSize: 12,
-            fill: 'black',
-          },
-          body: {
-            stroke: '#ffc26d',
-            strokeWidth: 1,
-            fill: "#fff3ea"
-          },
-        },
-        visible: true,
-        zIndex: 1,
-        x: 40, // Number，必选，节点位置的 x 值
-        y: 40, // Number，必选，节点位置的 y 值
-        width: 50, // Number，可选，节点大小的 width 值
-        height: 50, // Number，可选，节点大小的 height 值
-        parent: "",//
-        ports: {
-          groups: {
-            out: {
-              attrs: {
-                circle: {
-                  r: 3,
-                  magnet: true,
-                  stroke: "#31d0c6",
-                  strokeWidth: 2,
-                  fill: "#fff",
-                  visibility: "hidden"
-                },
-              },
-              position: "right",
-            },
-          },
-          items: [
-            { id: Guid.create().toString(), group: "out" },
-          ],
-        },
-      }
-    )
+    Shape.Circle.config(circleNodeBaseConfig);
     const contai = document.getElementById("container");
-    const containerHtml = document.getElementById("graph-panel");
+    const containerHtml = document.getElementById("container");
     const width: number = containerHtml !== null ? containerHtml.clientWidth : 1450;
     const height: number = containerHtml !== null ? containerHtml.clientHeight : 750;
     console.log("子组件")
-    console.log(width);
     if (contai != null && typeof width !== null && height != null) {
       this.graph = new Graph({
         container: contai,
@@ -387,8 +51,31 @@ export default class FlowDesignPanel extends Vue {
         clickThreshold: 1, //当鼠标移动次数超过指定的数字时，将不触发鼠标点击事件。
         width: width,
         height: height,
-        snapline: {
+        /**
+         * 拖放功能
+         */
+        scroller: {
           enabled: true,
+          pageVisible: true,
+          pageBreak: false,
+          pannable: true,
+        },
+        /**
+         * 小地图
+         */
+        minimap: {
+          enabled: true,
+          container: this.minimapContainer,
+          width: 100,
+          height: 100,
+          padding: 10,
+        },
+        /**
+         * 鼠标滚轮加ctrl 放大或缩小
+         */
+        mousewheel: {
+          enabled: true,
+          modifiers: ['ctrl', 'meta'],
         },
       });
       this.graph.drawBackground({
@@ -401,7 +88,11 @@ export default class FlowDesignPanel extends Vue {
       this.graph.on("node:click", (nodecurren: any) => {
         console.log("节点被单击了！！！！！！！asd a ！", nodecurren);
         this.reset();
-        nodecurren.node.attr("body/stroke", "orange");
+        nodecurren.node.attr("body", {
+          stroke: "#41d0ce",
+          strokeWidth: 2,
+          fill: "#89e8de",
+        });
       });
       /**
        * 双击节点事件
@@ -413,10 +104,7 @@ export default class FlowDesignPanel extends Vue {
        * 线连接到锚点事件
        */
       this.graph.on("edge:connected", (addedge: any) => {
-        console.log();
-        addedge.edge.attrs.line.stroke = "#31d0c6";
-        console.log(this.graph);
-        console.log(this.graph!.getNodes())
+        // addedge.edge.attrs.line.stroke = "#31d0c6";
         console.log("鼠标到锚点的事件！！！！！！！！");
       });
       /**
@@ -445,14 +133,7 @@ export default class FlowDesignPanel extends Vue {
       this.graph.on("edge:click", (edgecurren: any) => {
         console.log("单击了线！！！！！！！！", edgecurren);
         this.reset();
-        edgecurren.edge.attr("line/stroke", "orange");
-        edgecurren.edge.prop("labels/0", {
-          attrs: {
-            body: {
-              stroke: "orange",
-            },
-          },
-        });
+        edgecurren.edge.attr("line/stroke", "#41d0ce");
       });
       /*
        * 鼠标移动到节点显示连接桩
@@ -496,11 +177,9 @@ export default class FlowDesignPanel extends Vue {
    * 重写添加节点到画布内 (this.dnd = new Addon.Dnd({ target: this.graph, animation: true, getDropNode: this.getDropNode }))
    */
   // private getDropNode(node: Node): Node {
-
+  //   // console.log(node)
   //   // console.log(this.graph!.getNodes())
-  //   //this.graph!.addNode(this.nodedatamodel);
-  //   debugger
-  //   return node;
+  //   return node.clone();
   // }
   // private showPorts(ports: NodeListOf<SVGAElement>, show: boolean) {
   //   // console.log(ports)
@@ -522,10 +201,32 @@ export default class FlowDesignPanel extends Vue {
     const nodes = this.graph!.getNodes();
     const edges = this.graph!.getEdges();
     nodes.forEach((node: any) => {
-      node.attr("body/stroke", "#31d0c6");
+      /***
+       * 判断节点类型
+       */
+      switch (node.shape) {
+        case "rect":
+
+          // stroke: "#31d0c6",
+          //           strokeWidth: 2,
+          //           fill: "#fff",
+          node.attr("body", {
+            fill: "#e6f6fd",
+            stroke: "#1890ff",
+            strokeWidth: 1,
+          });
+          break;
+        case "circle":
+          node.attr("body", {
+            stroke: "#fb982c",
+            strokeWidth: 1,
+            fill: "#fef7e7",
+          });
+          break;
+      }
     });
     edges.forEach((edge: any) => {
-      edge.attr("line/stroke", "#31d0c6");
+      edge.attr("line/stroke", "#aab7c4");
       edge.prop("labels/0", {
         attrs: {
           body: {
@@ -538,21 +239,6 @@ export default class FlowDesignPanel extends Vue {
   startDrag(e: any) {
     const target = e.currentTarget
     const type = target.getAttribute('data-type')
-    let rect = new Shape.Rect({
-      width: 100,
-      height: 40,
-      attrs: {
-        label: {
-          text: 'Rect',
-          fill: '#6a6c8a',
-        },
-        body: {
-          fill: "#C1F1C5",
-          stroke: '#31d0c6',
-          strokeWidth: 2,
-        },
-      },
-    });
     const node =
       type === 'rect'
         ? new Shape.Rect({
@@ -575,5 +261,28 @@ export default class FlowDesignPanel extends Vue {
           },
         })
     this.dnd!.start(node, e as any)
+  }
+  Save() {
+    console.log(this.graph!.getNodes());
+    this.graph!.getNodes().forEach((_item: any) => {
+      const items: IPorts = {
+        items: _item.ports.items
+      };
+      const node: INodeEntity = {
+        id: _item.id,
+        children: _item.children,
+        data: _item.data,
+        label: _item.label,
+        parent: _item.parent,
+        shape: _item.shape,
+        visible: _item.visible,
+        x: _item.store.data.position.x,
+        y: _item.store.data.position.y,
+        ports: items
+      }
+      console.log(node)
+      console.log(this.nodeArray.push(node))
+      // console.log(_item)
+    })
   }
 }

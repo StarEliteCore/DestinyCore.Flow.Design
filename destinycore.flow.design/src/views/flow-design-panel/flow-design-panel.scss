@@ -23,6 +23,20 @@
         }
         .graph{
             height: calc(100% - 50px);
+            // position: relative;
+            .minimapContainer{
+                padding: 15px;
+                z-index: 100;
+                position: absolute !important;
+                .x6-widget-minimap{
+                    background: none;
+                    border: 1px solid ;
+                }
+            }
+            #container{
+                height: 100%;
+                width: 100%;
+            }
         }
     }
 }

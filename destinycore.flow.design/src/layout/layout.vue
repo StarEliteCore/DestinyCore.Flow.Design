@@ -1,26 +1,35 @@
 <template>
-  <a-layout id="main-app-layout" class="layout">
+  <!-- <a-layout id="main-app-layout" class="layout">
     <a-layout-sider class="main-app-layout__sider">Sider</a-layout-sider>
     <a-layout class="main-app-layout--right">
       <a-layout-header>
         Header
       </a-layout-header>
       <a-layout-content class="main-app-layout__content">
-        <router-view  class="admin-layout_content"></router-view>
+        <router-view v-if="!loading" class="admin-layout_content"></router-view>
       </a-layout-content>
     </a-layout>
-  </a-layout>
+  </a-layout> -->
+  <Layout id="main-app-layout" class="layout">
+    <Sider class="main-app-layout__sider">Sider</Sider>
+    <Layout class="main-app-layout--right">
+      <Header>
+        Header
+      </Header>
+      <Content class="main-app-layout__content">
+        <router-view v-if="!loading" class="admin-layout_content"></router-view>
+      </Content>
+    </Layout>
+  </Layout>
 </template>
 <script lang="ts" src="./layout.ts"></script>
 <style lang="scss" src="./layout.scss" scoped></style>
 <style lang="scss">
   @import "~@/assets/styles/index.scss";
-
   .fade-enter-active,
   .fade-leave-active {
     transition: opacity 0.5s;
   }
-
   .fade-enter,
   .fade-leave-to {
     opacity: 0;

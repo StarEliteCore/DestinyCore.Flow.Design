@@ -4,7 +4,7 @@ import { IPorts } from './flow-design-portsbase-entity';
 /**
  * 节点和边的基类
  */
-export interface IBaseEntity extends IEntity<string> {
+export interface INodeEntity extends IEntity<string> {
   /**
    * 子节点/边。
    */
