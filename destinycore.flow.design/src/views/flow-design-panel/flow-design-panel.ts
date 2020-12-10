@@ -1,13 +1,21 @@
-import { edgeBaseConfig } from '@/domain/flow-design-config/edgeconfig';
-import { circleNodeBaseConfig, rectNodeBaseConfig } from '@/domain/flow-design-config/nodeconfig';
-import { INodeEntity } from '@/domain/flow-design-entity/flow-design-node-entity/flow-design-node-entity';
 import { Addon, Edge, EdgeView, Graph, Shape } from "@antv/x6";
-import { Node } from "@antv/x6/lib/model"
-import { Guid } from "guid-typescript";
 import { Component, Ref, Vue } from "vue-property-decorator";
-import { IPorts } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-portsbase-entity"
+import {
+  IGroupsRelation,
+  IPorts,
+} from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-portsbase-entity";
+import {
+  circleNodeBaseConfig,
+  rectNodeBaseConfig,
+} from "@/domain/flow-design-config/nodeconfig";
+
+import { Guid } from "guid-typescript";
+import { INodeEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
+import { Node } from "@antv/x6/lib/model";
+import { edgeBaseConfig } from "@/domain/flow-design-config/edgeconfig";
+
 @Component({
-  name: "FlowDesignPanel"
+  name: "FlowDesignPanel",
 })
 export default class FlowDesignPanel extends Vue {
   private nodeArray: Array<INodeEntity> = [];
@@ -33,18 +41,20 @@ export default class FlowDesignPanel extends Vue {
     Shape.Circle.config(circleNodeBaseConfig);
     const contai = document.getElementById("container");
     const containerHtml = document.getElementById("container");
-    const width: number = containerHtml !== null ? containerHtml.clientWidth : 1450;
-    const height: number = containerHtml !== null ? containerHtml.clientHeight : 750;
-    console.log("子组件")
+    const width: number =
+      containerHtml !== null ? containerHtml.clientWidth : 1450;
+    const height: number =
+      containerHtml !== null ? containerHtml.clientHeight : 750;
+    console.log("子组件");
     if (contai != null && typeof width !== null && height != null) {
       this.graph = new Graph({
         container: contai,
         grid: {
           size: 10, // 网格大小 10px
           visible: true, // 绘制网格，默认绘制 dot 类型网格
-          type: 'mesh',
+          type: "mesh",
           args: {
-            color: '#ddd', // 网格线/点颜色
+            color: "#ddd", // 网格线/点颜色
             thickness: 1, // 网格线宽度/网格点大小
           },
         },
@@ -66,16 +76,17 @@ export default class FlowDesignPanel extends Vue {
         minimap: {
           enabled: true,
           container: this.minimapContainer,
-          width: 100,
-          height: 100,
+          width: 200,
+          height: 200,
           padding: 10,
+          minScale: 10,
         },
         /**
          * 鼠标滚轮加ctrl 放大或缩小
          */
         mousewheel: {
           enabled: true,
-          modifiers: ['ctrl', 'meta'],
+          modifiers: ["ctrl", "meta"],
         },
       });
       this.graph.drawBackground({
@@ -110,14 +121,22 @@ export default class FlowDesignPanel extends Vue {
       /**
        * 线鼠标抬起事件
        */
-      this.graph.on("edge:mouseup", (addedge: any, view: EdgeView, edge: Edge) => {
-        const ports = contai.querySelectorAll('.x6-port-body') as NodeListOf<SVGAElement>;
-        if (addedge.view.targetView === null) {
-          this.graph!.removeEdge(addedge.edge.id)
-          console.log(this.graph!.getEdges())
+      this.graph.on(
+        "edge:mouseup",
+        (addedge: any, view: EdgeView, edge: Edge) => {
+          const ports = contai.querySelectorAll(".x6-port-body") as NodeListOf<
+            SVGAElement
+          >;
+          console.log(addedge.edge.target.port);
+          if (
+            addedge.view.targetView === null ||
+            typeof addedge.edge.target.port == "undefined"
+          ) {
+            this.graph!.removeEdge(addedge.edge.id);
+            this.$message.warning("请链接到链接点内!", 3);
+          }
         }
-        // this.showPorts(ports, false)
-      });
+      );
       /**
        * 节点鼠标按下事件
        */
@@ -143,13 +162,17 @@ export default class FlowDesignPanel extends Vue {
         ports.forEach((_item: any) => {
           if (_item.group === "in") {
             ///设置入点链接桩为false不可以实现点击拖拽生成线
-            nodecurren.node.setPortProp(_item.id!, ['attrs', 'circle'], { magnet: false });
+            nodecurren.node.setPortProp(_item.id!, ["attrs", "circle"], {
+              magnet: false,
+            });
           }
           if (_item.group === "out") {
-            nodecurren.node.setPortProp(_item.id!, ['attrs', 'circle'], { style: { visibility: "visible" } })//鼠标移入显示链接桩
+            nodecurren.node.setPortProp(_item.id!, ["attrs", "circle"], {
+              style: { visibility: "visible" },
+            }); //鼠标移入显示链接桩
           }
-        })
-      })
+        });
+      });
       /**
        * 鼠标移动出节点隐藏连接桩
        */
@@ -158,18 +181,22 @@ export default class FlowDesignPanel extends Vue {
         ports.forEach((_item: any) => {
           if (_item.group === "in") {
             ///设置入点链接桩为false不可以实现点击拖拽生成线
-            nodecurren.node.setPortProp(_item.id!, ['attrs', 'circle'], { magnet: true });
+            nodecurren.node.setPortProp(_item.id!, ["attrs", "circle"], {
+              magnet: true,
+            });
           }
           if (_item.group === "out") {
-            nodecurren.node.setPortProp(_item.id!, ['attrs', 'circle'], { style: { visibility: "hidden" } })//鼠标移除隐藏链接桩
+            nodecurren.node.setPortProp(_item.id!, ["attrs", "circle"], {
+              style: { visibility: "hidden" },
+            }); //鼠标移除隐藏链接桩
           }
-        })
-      })
+        });
+      });
       /**
        * 初始化画布节点或者线
        */
       // this.graph.fromJSON(this.graphdata);
-      this.dnd = new Addon.Dnd({ target: this.graph, animation: true })
+      this.dnd = new Addon.Dnd({ target: this.graph, animation: true });
       // this.graph.addNode(this.nodetest)
     }
   }
@@ -206,10 +233,6 @@ export default class FlowDesignPanel extends Vue {
        */
       switch (node.shape) {
         case "rect":
-
-          // stroke: "#31d0c6",
-          //           strokeWidth: 2,
-          //           fill: "#fff",
           node.attr("body", {
             fill: "#e6f6fd",
             stroke: "#1890ff",
@@ -237,37 +260,60 @@ export default class FlowDesignPanel extends Vue {
     });
   }
   startDrag(e: any) {
-    const target = e.currentTarget
-    const type = target.getAttribute('data-type')
+    const target = e.currentTarget;
+    const type = target.getAttribute("data-type");
     const node =
-      type === 'rect'
+      type === "rect"
         ? new Shape.Rect({
-          id: Guid.create.toString(),
-          label: "任务节点",
-          ports: {
-            items: [
-              { id: Guid.create().toString(), group: "in" },
-              { id: Guid.create().toString(), group: "out" },
-            ],
-          },
-        })
+            id: Guid.create.toString(),
+            label: "任务节点",
+            ports: {
+              items: [
+                { id: Guid.create().toString(), group: "in" },
+                { id: Guid.create().toString(), group: "out" },
+              ],
+            },
+          })
         : new Shape.Circle({
-          id: Guid.create.toString(),
-          label: "开始节点",
-          ports: {
-            items: [
-              { id: Guid.create().toString(), group: "out" },
-            ],
-          },
-        })
-    this.dnd!.start(node, e as any)
+            id: Guid.create.toString(),
+            label: "开始节点",
+            ports: {
+              items: [{ id: Guid.create().toString(), group: "out" }],
+            },
+          });
+    this.dnd!.start(node, e as any);
   }
   Save() {
-    console.log(this.graph!.getNodes());
+    /**
+     * 循环清洗节点数据
+     */
     this.graph!.getNodes().forEach((_item: any) => {
-      const items: IPorts = {
-        items: _item.ports.items
+      /**
+       * 创建链接桩数组
+       */
+      const itemarr: Array<IGroupsRelation> = [];
+      /**
+       * 循环链接桩数组
+       */
+      _item.ports.items.forEach((element: any) => {
+        /**
+         * 将画布中节点内的链接桩对象清洗出来
+         */
+        const item: IGroupsRelation = {
+          id: element.id,
+          group: element.group,
+        };
+        itemarr.push(item);
+      });
+      /**
+       * 创建链接桩对象
+       */
+      const portmodel: IPorts = {
+        items: itemarr,
       };
+      /**
+       * 定义一个节点对象
+       */
       const node: INodeEntity = {
         id: _item.id,
         children: _item.children,
@@ -278,11 +324,9 @@ export default class FlowDesignPanel extends Vue {
         visible: _item.visible,
         x: _item.store.data.position.x,
         y: _item.store.data.position.y,
-        ports: items
-      }
-      console.log(node)
-      console.log(this.nodeArray.push(node))
-      // console.log(_item)
-    })
+        ports: portmodel,
+      };
+    });
+    console.log(this.nodeArray);
   }
 }
