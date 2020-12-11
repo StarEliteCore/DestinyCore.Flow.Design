@@ -81,6 +81,15 @@ export default class FlowDesignPanel extends Vue {
           padding: 10,
           minScale: 10,
         },
+        // selecting: {
+        //   enabled: true,
+        //   multiple: true,
+        //   rubberband: true,
+        //   movable: true,
+        // selectCellOnMoved: true,
+        // showNodeSelectionBox: true,
+        // showEdgeSelectionBox: true
+        // },
         /**
          * 鼠标滚轮加ctrl 放大或缩小
          */
@@ -115,25 +124,35 @@ export default class FlowDesignPanel extends Vue {
        * 线连接到锚点事件
        */
       this.graph.on("edge:connected", (addedge: any) => {
-        // addedge.edge.attrs.line.stroke = "#31d0c6";
-        console.log("鼠标到锚点的事件！！！！！！！！");
+        /**
+         * 判断是否连接到链接桩内或者是自己，如果是自己上述满足一个则删除线
+         */
+        if(addedge.edge.hasLoop())
+        {
+          this.graph!.removeEdge(addedge.edge.id);
+          this.$message.warning("不可以链接自身!",3)
+          return ;
+        }
+        if(typeof addedge.edge.getTargetPortId()==="undefined")
+        {
+          this.graph!.removeEdge(addedge.edge.id);
+          this.$message.warning("请链接到连接点内!",3)
+          return ;
+        }
       });
+
       /**
        * 线鼠标抬起事件
        */
       this.graph.on(
         "edge:mouseup",
         (addedge: any, view: EdgeView, edge: Edge) => {
-          const ports = contai.querySelectorAll(".x6-port-body") as NodeListOf<
-            SVGAElement
-          >;
-          console.log(addedge.edge.target.port);
-          if (
-            addedge.view.targetView === null ||
-            typeof addedge.edge.target.port == "undefined"
-          ) {
+
+          /**
+           * 如果没有目标点删除线
+           */
+          if (addedge.edge.getTargetCell() == null) {
             this.graph!.removeEdge(addedge.edge.id);
-            this.$message.warning("请链接到链接点内!", 3);
           }
         }
       );
@@ -159,6 +178,8 @@ export default class FlowDesignPanel extends Vue {
        */
       this.graph.on("node:mouseenter", (nodecurren: any) => {
         const ports = nodecurren.node.getPorts();
+        const htmlports = contai.querySelectorAll('.x6-port-body') as NodeListOf<SVGAElement>;
+        this.showPorts(htmlports, true)
         ports.forEach((_item: any) => {
           if (_item.group === "in") {
             ///设置入点链接桩为false不可以实现点击拖拽生成线
@@ -166,11 +187,11 @@ export default class FlowDesignPanel extends Vue {
               magnet: false,
             });
           }
-          if (_item.group === "out") {
-            nodecurren.node.setPortProp(_item.id!, ["attrs", "circle"], {
-              style: { visibility: "visible" },
-            }); //鼠标移入显示链接桩
-          }
+          // if (_item.group === "out") {
+          // nodecurren.node.setPortProp(_item.id!, ["attrs", "circle"], {
+          //   style: { visibility: "visible" },
+          // }); //鼠标移入显示链接桩
+          // }
         });
       });
       /**
@@ -178,6 +199,8 @@ export default class FlowDesignPanel extends Vue {
        */
       this.graph.on("node:mouseleave", (nodecurren: any) => {
         const ports = nodecurren.node.getPorts();
+        const htmlports = contai.querySelectorAll('.x6-port-body') as NodeListOf<SVGAElement>;
+        this.showPorts(htmlports, false)
         ports.forEach((_item: any) => {
           if (_item.group === "in") {
             ///设置入点链接桩为false不可以实现点击拖拽生成线
@@ -185,13 +208,13 @@ export default class FlowDesignPanel extends Vue {
               magnet: true,
             });
           }
-          if (_item.group === "out") {
-            nodecurren.node.setPortProp(_item.id!, ["attrs", "circle"], {
-              style: { visibility: "hidden" },
-            }); //鼠标移除隐藏链接桩
-          }
+          // nodecurren.node.setPortProp(_item.id!, ["attrs", "circle"], {
+          //   style: { visibility: "hidden" },
+          // }); //鼠标移除隐藏链接桩
         });
       });
+
+
       /**
        * 初始化画布节点或者线
        */
@@ -223,6 +246,11 @@ export default class FlowDesignPanel extends Vue {
   //     }
   //   }
   // }
+  private showPorts(ports: NodeListOf<SVGAElement>, show: boolean) {
+    for (let i = 0, len = ports.length; i < len; i = i + 1) {
+      ports[i].style.visibility = show ? 'visible' : 'hidden'
+    }
+  }
   private reset() {
     // this.graph.drawBackground({ color: "#fff" });
     const nodes = this.graph!.getNodes();
@@ -265,22 +293,22 @@ export default class FlowDesignPanel extends Vue {
     const node =
       type === "rect"
         ? new Shape.Rect({
-            id: Guid.create.toString(),
-            label: "任务节点",
-            ports: {
-              items: [
-                { id: Guid.create().toString(), group: "in" },
-                { id: Guid.create().toString(), group: "out" },
-              ],
-            },
-          })
+          id: Guid.create.toString(),
+          label: "任务节点",
+          ports: {
+            items: [
+              { id: Guid.create().toString(), group: "in" },
+              { id: Guid.create().toString(), group: "out" },
+            ],
+          },
+        })
         : new Shape.Circle({
-            id: Guid.create.toString(),
-            label: "开始节点",
-            ports: {
-              items: [{ id: Guid.create().toString(), group: "out" }],
-            },
-          });
+          id: Guid.create.toString(),
+          label: "开始节点",
+          ports: {
+            items: [{ id: Guid.create().toString(), group: "out" }],
+          },
+        });
     this.dnd!.start(node, e as any);
   }
   Save() {

@@ -30,6 +30,7 @@ export const rectNodeBaseConfig = {
                         stroke: "#31d0c6",
                         strokeWidth: 2,
                         fill: "#fff",
+                        visibility: "hidden"
                     },
                 },
                 position: "left",
@@ -38,10 +39,11 @@ export const rectNodeBaseConfig = {
                 attrs: {
                     circle: {
                         r: 4,
-                        magnet: true,
+                        magnet: false,
                         stroke: "#31d0c6",
                         strokeWidth: 2,
                         fill: "#fff",
+                        visibility: "hidden"
                     },
                 },
                 position: "right",
