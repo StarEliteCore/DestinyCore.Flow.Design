@@ -1,4 +1,5 @@
 import { IEntity } from "@/sharad/baseentity/IEntity";
+import { NodeTypeEnum } from './flow-design-node-enum';
 import { IPorts } from './flow-design-portsbase-entity';
 
 /**
@@ -12,7 +13,7 @@ export interface INodeEntity extends IEntity<string> {
   /**
    * 节点/边关联的业务数据。
    */
-  data: Object;
+  data: INodeDataEntity;
   /**
    * 名称
    */
@@ -41,4 +42,11 @@ export interface INodeEntity extends IEntity<string> {
    * 链接桩数组
    */
   ports: IPorts
+}
+
+export interface INodeDataEntity{
+  /**
+   * 节点类型
+   */
+  NodeType:NodeTypeEnum;
 }

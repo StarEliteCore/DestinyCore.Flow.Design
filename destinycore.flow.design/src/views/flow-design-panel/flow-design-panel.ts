@@ -13,6 +13,7 @@ import { Guid } from "guid-typescript";
 import { INodeEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
 import { Node } from "@antv/x6/lib/model";
 import { edgeBaseConfig } from "@/domain/flow-design-config/edgeconfig";
+import { NodeTypeEnum } from '@/domain/flow-design-entity/flow-design-node-entity/flow-design-node-enum';
 
 @Component({
   name: "FlowDesignPanel",
@@ -70,6 +71,29 @@ export default class FlowDesignPanel extends Vue {
           pageBreak: false,
           pannable: true,
         },
+        /** 
+         * 是否高亮
+        */
+        // highlighting: {
+        //   // nodeAvailable: {
+        //   //   name: 'className',
+        //   //   args: {
+        //   //     className: 'available',
+        //   //   },
+        //   // },
+        //   magnetAvailable: {
+        //     name: 'className',
+        //     args: {
+        //       className: 'available',
+        //     },
+        //   },
+        //   magnetAdsorbed: {
+        //     name: 'className',
+        //     args: {
+        //       className: 'adsorbed',
+        //     },
+        //   },
+        // },
         /**
          * 小地图
          */
@@ -127,17 +151,22 @@ export default class FlowDesignPanel extends Vue {
         /**
          * 判断是否连接到链接桩内或者是自己，如果是自己上述满足一个则删除线
          */
-        if(addedge.edge.hasLoop())
-        {
+        if (addedge.edge.hasLoop()) {
           this.graph!.removeEdge(addedge.edge.id);
-          this.$message.warning("不可以链接自身!",3)
-          return ;
+          this.$message.warning("链接目标不可为自身!", 3)
+          return;
         }
-        if(typeof addedge.edge.getTargetPortId()==="undefined")
-        {
+        const sourceNode = addedge.edge.getSourceNode();
+        const targetNode = addedge.edge.getTargetNode();
+        if ((targetNode && targetNode.data.NodeType === NodeTypeEnum.startNode)) {
           this.graph!.removeEdge(addedge.edge.id);
-          this.$message.warning("请链接到连接点内!",3)
-          return ;
+          this.$message.warning("链接目标不可为开始节点!", 3)
+          return;
+        }
+        if (typeof addedge.edge.getTargetPortId() === "undefined") {
+          this.graph!.removeEdge(addedge.edge.id);
+          this.$message.warning("请链接到连接点内!", 3)
+          return;
         }
       });
 
@@ -147,7 +176,6 @@ export default class FlowDesignPanel extends Vue {
       this.graph.on(
         "edge:mouseup",
         (addedge: any, view: EdgeView, edge: Edge) => {
-
           /**
            * 如果没有目标点删除线
            */
@@ -170,51 +198,46 @@ export default class FlowDesignPanel extends Vue {
        */
       this.graph.on("edge:click", (edgecurren: any) => {
         console.log("单击了线！！！！！！！！", edgecurren);
-        this.reset();
         edgecurren.edge.attr("line/stroke", "#41d0ce");
       });
       /*
        * 鼠标移动到节点显示连接桩
        */
       this.graph.on("node:mouseenter", (nodecurren: any) => {
-        const ports = nodecurren.node.getPorts();
-        const htmlports = contai.querySelectorAll('.x6-port-body') as NodeListOf<SVGAElement>;
-        this.showPorts(htmlports, true)
-        ports.forEach((_item: any) => {
-          if (_item.group === "in") {
-            ///设置入点链接桩为false不可以实现点击拖拽生成线
-            nodecurren.node.setPortProp(_item.id!, ["attrs", "circle"], {
-              magnet: false,
-            });
-          }
-          // if (_item.group === "out") {
-          // nodecurren.node.setPortProp(_item.id!, ["attrs", "circle"], {
-          //   style: { visibility: "visible" },
-          // }); //鼠标移入显示链接桩
-          // }
-        });
+        this.graph!.getNodes().forEach((_node) => {
+          const ports = _node.getPorts();
+          ports.forEach(_item => {
+            _node.setPortProp(_item.id!, "attrs/circle", { style: { visibility: "visible" } })
+          })
+        })
+        // const ports = nodecurren.node.getPorts();
+        // const htmlports = contai.querySelectorAll('.x6-port-body') as NodeListOf<SVGAElement>;
+        // this.showPorts(htmlports, true)
+        // nodecurren.node.getPorts().forEach((_item: any) => {
+        //   if (_item.group === "in") {
+        //     // debugger
+        //     nodecurren.node.setPortProp(_item.id, "attrs/circle/magnet", false);
+        //   }
+        // });
       });
       /**
        * 鼠标移动出节点隐藏连接桩
        */
       this.graph.on("node:mouseleave", (nodecurren: any) => {
-        const ports = nodecurren.node.getPorts();
-        const htmlports = contai.querySelectorAll('.x6-port-body') as NodeListOf<SVGAElement>;
-        this.showPorts(htmlports, false)
-        ports.forEach((_item: any) => {
-          if (_item.group === "in") {
-            ///设置入点链接桩为false不可以实现点击拖拽生成线
-            nodecurren.node.setPortProp(_item.id!, ["attrs", "circle"], {
-              magnet: true,
-            });
-          }
-          // nodecurren.node.setPortProp(_item.id!, ["attrs", "circle"], {
-          //   style: { visibility: "hidden" },
-          // }); //鼠标移除隐藏链接桩
-        });
+        // const ports = nodecurren.node.getPorts();
+        // const htmlports = contai.querySelectorAll('.x6-port-body') as NodeListOf<SVGAElement>;
+        // this.showPorts(htmlports, false)
+        this.graph!.getNodes().forEach((_node) => {
+          const ports = _node.getPorts();
+          ports.forEach(_item => {
+            _node.setPortProp(_item.id!, "attrs/circle", { style: { visibility: "hidden" } })
+          })
+        })
+        // nodecurren.node.ports.forEach((_item: any) => {
+        //   ///设置入点链接桩为false不可以实现点击拖拽生成线
+        //   nodecurren.node.setPortProp(_item.id, "attrs/circle/magnet", true);
+        // });
       });
-
-
       /**
        * 初始化画布节点或者线
        */
@@ -246,9 +269,20 @@ export default class FlowDesignPanel extends Vue {
   //     }
   //   }
   // }
+  /***
+   * 鼠标移入和移除节点时候链接桩点显示或不显示
+   */
   private showPorts(ports: NodeListOf<SVGAElement>, show: boolean) {
+    // debugger
     for (let i = 0, len = ports.length; i < len; i = i + 1) {
-      ports[i].style.visibility = show ? 'visible' : 'hidden'
+      ports[i].style.visibility = show ? 'visible' : 'hidden';
+      // if (ports[i].getAttribute("port-group") === "in" && show) {
+      //   ports[i].setAttribute("magnet", "false")
+      // }
+      // if (ports[i].getAttribute("port-group") === "in" && !show) {
+      //   ports[i].setAttribute("magnet", "true")
+      // }
+      // console.log(ports[i])
     }
   }
   private reset() {
@@ -301,6 +335,9 @@ export default class FlowDesignPanel extends Vue {
               { id: Guid.create().toString(), group: "out" },
             ],
           },
+          data: {
+            NodeType: NodeTypeEnum.workNode
+          }
         })
         : new Shape.Circle({
           id: Guid.create.toString(),
@@ -308,6 +345,9 @@ export default class FlowDesignPanel extends Vue {
           ports: {
             items: [{ id: Guid.create().toString(), group: "out" }],
           },
+          data: {
+            NodeType: NodeTypeEnum.startNode
+          }
         });
     this.dnd!.start(node, e as any);
   }

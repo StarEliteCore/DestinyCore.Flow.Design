@@ -26,7 +26,7 @@ export const rectNodeBaseConfig = {
                 attrs: {
                     circle: {
                         r: 4,
-                        magnet: false,
+                        magnet: true,
                         stroke: "#31d0c6",
                         strokeWidth: 2,
                         fill: "#fff",
@@ -39,7 +39,7 @@ export const rectNodeBaseConfig = {
                 attrs: {
                     circle: {
                         r: 4,
-                        magnet: false,
+                        magnet: true,
                         stroke: "#31d0c6",
                         strokeWidth: 2,
                         fill: "#fff",
