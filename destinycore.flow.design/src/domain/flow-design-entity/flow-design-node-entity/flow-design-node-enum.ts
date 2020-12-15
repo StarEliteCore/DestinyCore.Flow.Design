@@ -13,5 +13,5 @@ export enum NodeTypeEnum {
     /**
      * 结束节点
      */
-    endNode = 5,
+    endNode = 10,
   }

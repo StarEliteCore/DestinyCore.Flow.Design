@@ -17,6 +17,8 @@ module.exports = {
     "max-len": "off",
     "no-extra-boolean-cast": 0,
     "no-useless-escape": "off",
+    "no-inner-declarations": "off",
+    "no-unused-vars": "off",
     "vue/no-parsing-error": [
       2,
       {

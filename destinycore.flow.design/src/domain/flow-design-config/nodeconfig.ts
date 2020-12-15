@@ -5,8 +5,8 @@ import { Guid } from 'guid-typescript';
 export const rectNodeBaseConfig = {
     attrs: {
         body: {
-            fill: "#e6f6fd",
-            stroke: "#1890ff",
+            fill: "rgba(95,149,255,0.05)",
+            stroke: "#5f95ff",
             strokeWidth: 1,
         },
         label: {
@@ -27,8 +27,8 @@ export const rectNodeBaseConfig = {
                     circle: {
                         r: 4,
                         magnet: true,
-                        stroke: "#31d0c6",
-                        strokeWidth: 2,
+                        stroke: "#5f95ff",
+                        strokeWidth: 1,
                         fill: "#fff",
                         visibility: "hidden"
                     },
@@ -40,8 +40,8 @@ export const rectNodeBaseConfig = {
                     circle: {
                         r: 4,
                         magnet: true,
-                        stroke: "#31d0c6",
-                        strokeWidth: 2,
+                        stroke: "#5f95ff",
+                        strokeWidth: 1,
                         fill: "#fff",
                         visibility: "hidden"
                     },
@@ -68,7 +68,7 @@ export const circleNodeBaseConfig = {
         body: {
             stroke: '#fb982c',
             strokeWidth: 1,
-            fill: "#fef7e7"
+            fill: "rgba(251,152,44,0.05)"
         },
     },
     visible: true,
@@ -85,8 +85,8 @@ export const circleNodeBaseConfig = {
                     circle: {
                         r: 4,
                         magnet: true,
-                        stroke: "#31d0c6",
-                        strokeWidth: 2,
+                        stroke: "#fb982c",
+                        strokeWidth: 1,
                         fill: "#fff",
                         visibility: "hidden"
                     },

@@ -13,7 +13,7 @@
         工具栏
         <a-button type="primary" draggable="true" data-type="rect" @click="Save">保存</a-button>
       </a-row>
-      <div class="graph">
+      <div id="graph" class="graph">
         <div class="minimapContainer" ref="refMiniMapContainer"></div>
         <div id="container">
         </div>

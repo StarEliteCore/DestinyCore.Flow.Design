@@ -21,7 +21,8 @@
             height: 40px;
             padding: 5px;
         }
-        .graph{
+        #graph{
+            width: 100%;
             height: calc(100% - 50px);
             // position: relative;
             .minimapContainer{

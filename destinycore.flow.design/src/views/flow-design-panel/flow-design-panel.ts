@@ -1,4 +1,4 @@
-import { Addon, Edge, EdgeView, Graph, Shape } from "@antv/x6";
+import { Addon, Edge, Graph, Shape } from "@antv/x6";
 import { Component, Ref, Vue } from "vue-property-decorator";
 import {
   IGroupsRelation,
@@ -11,7 +11,7 @@ import {
 
 import { Guid } from "guid-typescript";
 import { INodeEntity } from "@/domain/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
-import { Node } from "@antv/x6/lib/model";
+import { Node } from "@antv/x6/lib/model/node";
 import { edgeBaseConfig } from "@/domain/flow-design-config/edgeconfig";
 import { NodeTypeEnum } from '@/domain/flow-design-entity/flow-design-node-entity/flow-design-node-enum';
 
@@ -20,8 +20,8 @@ import { NodeTypeEnum } from '@/domain/flow-design-entity/flow-design-node-entit
 })
 export default class FlowDesignPanel extends Vue {
   private nodeArray: Array<INodeEntity> = [];
-  private graph?: Graph;
-  private dnd?: Addon.Dnd;
+  private graph: any;
+  private dnd: any;
   private isgra: boolean = false;
   @Ref("refMiniMapContainer")
   private minimapContainer!: HTMLDivElement;
@@ -41,12 +41,15 @@ export default class FlowDesignPanel extends Vue {
      */
     Shape.Circle.config(circleNodeBaseConfig);
     const contai = document.getElementById("container");
-    const containerHtml = document.getElementById("container");
+    const containerHtml = document.getElementById("graph");
     const width: number =
       containerHtml !== null ? containerHtml.clientWidth : 1450;
     const height: number =
       containerHtml !== null ? containerHtml.clientHeight : 750;
-    console.log("子组件");
+    const _this = this;
+    // window.addEventListener("resize", () => {
+    //   console.log(document.getElementById("graph")!.clientWidth)
+    // })
     if (contai != null && typeof width !== null && height != null) {
       this.graph = new Graph({
         container: contai,
@@ -105,6 +108,9 @@ export default class FlowDesignPanel extends Vue {
           padding: 10,
           minScale: 10,
         },
+        /**
+         * 多选和单选节点
+         */
         // selecting: {
         //   enabled: true,
         //   multiple: true,
@@ -121,11 +127,56 @@ export default class FlowDesignPanel extends Vue {
           enabled: true,
           modifiers: ["ctrl", "meta"],
         },
+        /**
+         * 
+         */
+        connecting: {
+          // 边的起点或者终点只能是节点或者连接桩。
+          dangling: false,
+          snap: {
+            // 距离节点或者连接桩 5px 时会触发自动吸附
+            radius: 10
+          },
+          // createEdge() {//设置连接时为虚线
+          //   return _this.graph.createEdge({
+          //     attrs: {
+          //       line: {
+          //         strokeDasharray: '5 5'
+          //       },
+          //     },
+          //   })
+          // },
+          // TODO: 检测连接 也可以在connected事件判断
+          // validateConnection({ edge, sourceCell, targetCell }) {
+          //   if (edge &&
+          //     (
+          //       edge.hasLoop() ||
+          //       edge.getTargetPortId() === "undefined" ||
+          //       edge.getTargetPortId() === null ||
+          //       (
+          //         sourceCell && (sourceCell.data.nodeType === ENodeType.end) &&
+          //         targetCell && (targetCell.data.nodeType === ENodeType.start)
+          //       )
+          //     )
+          //   ) {
+          //     return false;
+          //   }
+          //   return true;
+          // }
+        },
       });
+      window.addEventListener("resize", () => {
+        const resizecontainerHtml = document.getElementById("graph");
+        const resizewidth: number =
+        resizecontainerHtml !== null ? resizecontainerHtml.clientWidth : 1450;
+        const resizeheight: number =
+        resizecontainerHtml !== null ? resizecontainerHtml.clientHeight : 750;
+        console.log(resizewidth,resizeheight)
+        this.graph.resize(resizewidth, resizeheight);
+      })
       this.graph.drawBackground({
-        color: "#f0edc1",
+        color: "#fff",
       });
-      this.graph.resize();
       /**
        * 单击节点事件
        */
@@ -148,66 +199,85 @@ export default class FlowDesignPanel extends Vue {
        * 线连接到锚点事件
        */
       this.graph.on("edge:connected", (addedge: any) => {
+        const allEdgesArr = this.graph.getEdges();
+        const sourceNode = addedge.edge.getSourceNode();
+        const targetNode = addedge.edge.getTargetNode();
         /**
          * 判断是否连接到链接桩内或者是自己，如果是自己上述满足一个则删除线
          */
         if (addedge.edge.hasLoop()) {
-          this.graph!.removeEdge(addedge.edge.id);
+          this.graph.removeEdge(addedge.edge.id);
           this.$message.warning("链接目标不可为自身!", 3)
           return;
         }
-        const sourceNode = addedge.edge.getSourceNode();
-        const targetNode = addedge.edge.getTargetNode();
+        const isexitsarr = allEdgesArr.filter((_edge: any) => typeof sourceNode.id !== "undefined" && _edge.source.cell == sourceNode.id && (typeof targetNode.id !== "undefined" && _edge.target.cell == targetNode.id) && _edge.id !== addedge.edge.id);
+        if (isexitsarr.length > 0) {
+          this.graph.removeEdge(addedge.edge.id);
+          this.$message.warning("不可链接相同节点!", 3)
+          return;
+        }
         if ((targetNode && targetNode.data.NodeType === NodeTypeEnum.startNode)) {
-          this.graph!.removeEdge(addedge.edge.id);
+          this.graph.removeEdge(addedge.edge.id);
           this.$message.warning("链接目标不可为开始节点!", 3)
           return;
         }
+        // 避免连线节点形成闭环
+        // 避免两个节点之间连接同样的线
+        const filter = this.graph.getEdges().filter((_edge: Edge) => {
+          const target = _edge.getTargetNode();
+          const source = _edge.getSourceNode();
+          return (_edge.id !== addedge.edge.id) && (sourceNode.id === target?.id && targetNode.id === source?.id
+            || sourceNode.id === source?.id && targetNode.id === target?.id);
+        })
+        if (filter.length > 0) {
+          this.graph.removeEdge(addedge.edge.id);
+          this.$message.warning("两个节点之间不允许循环!", 3)
+          return
+        }
         if (typeof addedge.edge.getTargetPortId() === "undefined") {
-          this.graph!.removeEdge(addedge.edge.id);
+          this.graph.removeEdge(addedge.edge.id);
           this.$message.warning("请链接到连接点内!", 3)
           return;
         }
+        ////链接成功设置为实线
+        // addedge.edge.isNew && (addedge.edge.attr({
+        //               line: {
+        //                 strokeDasharray: '',
+        //               },
+        //             }))
       });
 
       /**
        * 线鼠标抬起事件
        */
-      this.graph.on(
-        "edge:mouseup",
-        (addedge: any, view: EdgeView, edge: Edge) => {
-          /**
-           * 如果没有目标点删除线
-           */
-          if (addedge.edge.getTargetCell() == null) {
-            this.graph!.removeEdge(addedge.edge.id);
-          }
-        }
-      );
-      /**
-       * 节点鼠标按下事件
-       */
-      // this.graph.on("node:mousedown", (addedge: any, view: EdgeView, edge: Edge) => {
-      //   debugger
-      //   const ports = contai.querySelectorAll('.x6-port-body') as NodeListOf<SVGAElement>;
-      //   debugger
-      //   this.showPorts(ports, true)
-      // });
+      // this.graph.on(
+      //   "edge:mouseup",
+      //   (addedge: any) => {
+      //     /**
+      //      * 如果没有目标点删除线
+      //      */
+      //     if (addedge.edge.getTargetCell() == null) {
+      //       this.graph.removeEdge(addedge.edge.id);
+      //     }
+      //   }
+      // );
       /**
        * 单击线事件
        */
       this.graph.on("edge:click", (edgecurren: any) => {
         console.log("单击了线！！！！！！！！", edgecurren);
+        this.reset();
         edgecurren.edge.attr("line/stroke", "#41d0ce");
       });
       /*
        * 鼠标移动到节点显示连接桩
        */
-      this.graph.on("node:mouseenter", (nodecurren: any) => {
-        this.graph!.getNodes().forEach((_node) => {
+      this.graph.on("node:mouseenter", (_nodecurren: any) => {
+        // console.log(_nodecurren)
+        this.graph.getNodes().forEach((_node: any) => {
           const ports = _node.getPorts();
-          ports.forEach(_item => {
-            _node.setPortProp(_item.id!, "attrs/circle", { style: { visibility: "visible" } })
+          ports.forEach((_item: any) => {
+            _node.setPortProp(_item.id, "attrs/circle", { style: { visibility: "visible" } })
           })
         })
         // const ports = nodecurren.node.getPorts();
@@ -223,14 +293,15 @@ export default class FlowDesignPanel extends Vue {
       /**
        * 鼠标移动出节点隐藏连接桩
        */
-      this.graph.on("node:mouseleave", (nodecurren: any) => {
+      this.graph.on("node:mouseleave", (_nodecurren: any) => {
+        // console.log(_nodecurren)
         // const ports = nodecurren.node.getPorts();
         // const htmlports = contai.querySelectorAll('.x6-port-body') as NodeListOf<SVGAElement>;
         // this.showPorts(htmlports, false)
-        this.graph!.getNodes().forEach((_node) => {
+        this.graph.getNodes().forEach((_node: any) => {
           const ports = _node.getPorts();
-          ports.forEach(_item => {
-            _node.setPortProp(_item.id!, "attrs/circle", { style: { visibility: "hidden" } })
+          ports.forEach((_item: any) => {
+            _node.setPortProp(_item.id, "attrs/circle", { style: { visibility: "hidden" } })
           })
         })
         // nodecurren.node.ports.forEach((_item: any) => {
@@ -242,18 +313,63 @@ export default class FlowDesignPanel extends Vue {
        * 初始化画布节点或者线
        */
       // this.graph.fromJSON(this.graphdata);
-      this.dnd = new Addon.Dnd({ target: this.graph, animation: true });
-      // this.graph.addNode(this.nodetest)
+      /**
+       * 重写检查方法
+       * @param this 
+       * @param node 
+       */
+      function validateNode(this: Graph, node: Node): any {
+        /**
+         * 判断开始/结束节点是否存在
+         */
+        if (node.data.NodeType === NodeTypeEnum.endNode || node.data.NodeType === NodeTypeEnum.startNode) {
+          const isexitsIndex = this.getNodes().filter((_node: any) => typeof _node.data.NodeType !== "undefined" && _node.data.NodeType === node.data.NodeType);
+          if (isexitsIndex.length > 0) {
+            _this.$message.warning((typeof node.data.NodeType !== "undefined" && node.data.NodeType === NodeTypeEnum.startNode) ? "流程只允许有一个开始节点!" : "流程只允许有一个结束节点!", 3)
+            _this.graph.removeNode(node.id);
+            return false
+          }
+        }
+        return true;
+      }
+      this.dnd = new Addon.Dnd({ target: this.graph, animation: true, validateNode });
     }
   }
   /**
    * 重写添加节点到画布内 (this.dnd = new Addon.Dnd({ target: this.graph, animation: true, getDropNode: this.getDropNode }))
    */
-  // private getDropNode(node: Node): Node {
-  //   // console.log(node)
-  //   // console.log(this.graph!.getNodes())
-  //   return node.clone();
-  // }
+  private getDropNode(node: Node): Node {
+    // console.log(node)
+    // console.log(this.graph!.getNodes())
+    /**
+     * 判断开始/结束节点是否存在
+     */
+    if (node.data.NodeType === NodeTypeEnum.endNode || node.data.NodeType === NodeTypeEnum.startNode) {
+      const isexitsIndex = this.graph.getNodes().filter((_node: any) => typeof _node.data.NodeType !== "undefined" && _node.data.NodeType === node.data.NodeType);
+      if (isexitsIndex.length > 0) {
+        this.$message.warning((node.data.NodeType && node.data.NodeType === NodeTypeEnum.startNode) ? "流程只允许有一个开始节点!" : "流程只允许有一个结束节点!", 3)
+        this.graph.removeNode(node.id);
+        return node
+      }
+    }
+    return node.clone();
+  }
+  private validateNodes(graph: Graph, node: Node, _this: any): any {
+    // console.log(node)
+    // console.log(this.graph!.getNodes())
+    /**
+     * 判断开始/结束节点是否存在
+     */
+    if (node.data.NodeType === NodeTypeEnum.endNode || node.data.NodeType === NodeTypeEnum.startNode) {
+      const isexitsIndex = graph.getNodes().filter((_node: any) => typeof _node.data.NodeType !== "undefined" && _node.data.NodeType === node.data.NodeType);
+      if (isexitsIndex.length > 0) {
+        _this.$message.warning((node.data.NodeType === NodeTypeEnum.startNode) ? "流程只允许有一个开始节点!" : "流程只允许有一个结束节点!", 3)
+        this.graph.removeNode(node.id);
+        return false
+      }
+    }
+    return true;
+  }
   // private showPorts(ports: NodeListOf<SVGAElement>, show: boolean) {
   //   // console.log(ports)
   //   for (let i = 0, len = ports.length; i < len; i = i + 1) {
@@ -287,8 +403,8 @@ export default class FlowDesignPanel extends Vue {
   }
   private reset() {
     // this.graph.drawBackground({ color: "#fff" });
-    const nodes = this.graph!.getNodes();
-    const edges = this.graph!.getEdges();
+    const nodes = this.graph.getNodes();
+    const edges = this.graph.getEdges();
     nodes.forEach((node: any) => {
       /***
        * 判断节点类型
@@ -296,8 +412,8 @@ export default class FlowDesignPanel extends Vue {
       switch (node.shape) {
         case "rect":
           node.attr("body", {
-            fill: "#e6f6fd",
-            stroke: "#1890ff",
+            fill: "rgba(95,149,255,0.05)",
+            stroke: "#5f95ff",
             strokeWidth: 1,
           });
           break;
@@ -305,17 +421,17 @@ export default class FlowDesignPanel extends Vue {
           node.attr("body", {
             stroke: "#fb982c",
             strokeWidth: 1,
-            fill: "#fef7e7",
+            fill: "rgba(251,152,44,0.05)",
           });
           break;
       }
     });
     edges.forEach((edge: any) => {
-      edge.attr("line/stroke", "#aab7c4");
+      edge.attr("line/stroke", "#5f95ff");
       edge.prop("labels/0", {
         attrs: {
           body: {
-            stroke: "#9EFEAE",
+            stroke: "#5f95ff",
           },
         },
       });
@@ -349,13 +465,13 @@ export default class FlowDesignPanel extends Vue {
             NodeType: NodeTypeEnum.startNode
           }
         });
-    this.dnd!.start(node, e as any);
+    this.dnd.start(node, e as any);
   }
   Save() {
     /**
      * 循环清洗节点数据
      */
-    this.graph!.getNodes().forEach((_item: any) => {
+    this.graph.getNodes().forEach((_item: any) => {
       /**
        * 创建链接桩数组
        */
@@ -394,6 +510,7 @@ export default class FlowDesignPanel extends Vue {
         y: _item.store.data.position.y,
         ports: portmodel,
       };
+      this.nodeArray.push(node)
     });
     console.log(this.nodeArray);
   }

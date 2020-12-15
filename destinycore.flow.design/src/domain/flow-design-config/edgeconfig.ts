@@ -2,7 +2,7 @@ export const edgeBaseConfig = {
     router: "manhattan",
     attrs: {
         line: {
-            stroke: "#aab7c4",
+            stroke: "#5f95ff",
         }
     }
 }
