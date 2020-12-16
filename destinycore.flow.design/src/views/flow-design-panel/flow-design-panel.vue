@@ -14,7 +14,7 @@
         <a-button type="primary" draggable="true" data-type="rect" @click="Save">保存</a-button>
       </a-row>
       <div id="graph" class="graph">
-        <div class="minimapContainer" ref="refMiniMapContainer"></div>
+        <div id="destiny-minimap" class="minimapContainer" ref="refMiniMapContainer"></div>
         <div id="container">
         </div>
       </div>
