@@ -1,9 +1,12 @@
-import { injectable } from "inversify";
-import { IFlowPanelServices } from "./IFlowPanelServices";
 import "reflect-metadata"
+
 import { Edge, Graph } from "@antv/x6";
+
 import { CheckGraphEdgeConnectedReturnEnum } from "@/domain/entities/flow-design-entity/check-flow-return-enum/checkGraph-return-enum";
+import { IFlowPanelServices } from "./IFlowPanelServices";
 import { NodeTypeEnum } from "@/domain/entities/flow-design-entity/flow-design-node-entity/flow-design-node-enum";
+import { injectable } from "inversify";
+
 @injectable()
 export class FlowPanelServices implements IFlowPanelServices {
     Test(): void {
@@ -44,5 +47,4 @@ export class FlowPanelServices implements IFlowPanelServices {
         }
         return CheckGraphEdgeConnectedReturnEnum.None;
     }
-
 }
