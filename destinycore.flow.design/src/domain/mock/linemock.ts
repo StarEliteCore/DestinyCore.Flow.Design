@@ -1,4 +1,4 @@
-import { ILineEntity } from "@/domain/entities/flow-design-entity/flow-design-line-entity/flow-design-line-entity"
+import { ILineEntity } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-line-entity/flow-design-line-entity"
 
 export const LineListArr: Array<ILineEntity> =
     [

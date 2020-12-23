@@ -2,10 +2,10 @@ import { Graph, Shape } from "@antv/x6";
 import {
   circleNodeBaseConfig,
   rectNodeBaseConfig,
-} from "@/domain/entities/flow-design-config/nodeconfig";
+} from "@/domain/entities/flow-manager-entity/flow-design-config/nodeconfig";
 
 import IGraphConfig from "./Igraph";
-import { edgeBaseConfig } from "@/domain/entities/flow-design-config/edgeconfig";
+import { edgeBaseConfig } from "@/domain/entities/flow-manager-entity/flow-design-config/edgeconfig";
 
 export default class GraphConstruction {
   static createGraph(_graph: IGraphConfig): Graph {

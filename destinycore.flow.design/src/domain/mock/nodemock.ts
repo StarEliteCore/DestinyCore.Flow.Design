@@ -1,4 +1,4 @@
-import { INodeEntity } from "@/domain/entities/flow-design-entity/flow-design-node-entity/flow-design-node-entity"
+import { INodeEntity } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-entity"
 
 export const NodeListArr: Array<INodeEntity> =
     [
