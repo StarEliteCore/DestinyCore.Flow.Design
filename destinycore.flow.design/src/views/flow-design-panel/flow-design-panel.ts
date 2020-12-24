@@ -1,4 +1,4 @@
-import { Addon, Shape } from "@antv/x6";
+import { Addon, Graph, Shape } from "@antv/x6";
 import {
   ICellPortEntity,
   ILineEntity,
@@ -28,8 +28,14 @@ export default class FlowDesignPanel extends Vue {
   private nodeArray: Array<INodeEntity> = [];
   private lineArray: Array<ILineEntity> = [];
   private workFlowDto: WorkFlowDto = new WorkFlowDto()
-  private graph: any;
+  private graph!: Graph;
   private addonDnd: any;
+  private history!: Graph.HistoryManager;
+  private canRedo: boolean = false;
+  private canUndo: boolean = false;
+  // history(){
+  //   return this.graph.history
+  // }
   /**
    * 反序列化出的流程设计器对象
    */
@@ -59,6 +65,7 @@ export default class FlowDesignPanel extends Vue {
      * 初始化画布
      */
     this.graph = this.igraphServices.CreateGraph(config);// GraphConstruction.createGraph();
+    this.history = this.graph.history;
     // console.log(this.graph)
     /**
      * 初始化画布节点或者线
@@ -191,7 +198,13 @@ export default class FlowDesignPanel extends Vue {
     });
     this.flowgraphEntity.nodes = this.nodeArray;
     this.flowgraphEntity.edges = this.lineArray;
-    this.workFlowDto.flowDesignJson=JSON.stringify(this.flowgraphEntity);
+    this.workFlowDto.flowDesignJson = JSON.stringify(this.flowgraphEntity);
     this.flowmanagerServices.create(this.workFlowDto)
+  }
+  onRedo() {
+    this.history.canRedo() &&  this.history.redo();
+  }
+  onUndo() {
+    this.history.canUndo() &&  this.history.undo();
   }
 }
