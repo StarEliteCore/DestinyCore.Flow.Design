@@ -107,38 +107,38 @@ export class GraphServices implements IGraphServices {
         /*
          * 鼠标移动到节点显示连接桩
          */
-        this.graph.on("node:mouseenter", (_nodecurren: any) => {
-            // console.log(_nodecurren)
-            this.graph.getNodes().forEach((_node: any) => {
-                const ports = _node.getPorts();
-                ports.forEach((_item: any) => {
-                    _node.setPortProp(_item.id, "attrs/circle", {
-                        style: { visibility: "visible" },
-                    });
-                });
-            });
-        });
+        // this.graph.on("node:mouseenter", (_nodecurren: any) => {
+        //     // console.log(_nodecurren)
+        //     this.graph.getNodes().forEach((_node: any) => {
+        //         const ports = _node.getPorts();
+        //         ports.forEach((_item: any) => {
+        //             _node.setPortProp(_item.id, "attrs/circle", {
+        //                 style: { visibility: "visible" },
+        //             });
+        //         });
+        //     });
+        // });
         /**
          * 鼠标移动出节点隐藏连接桩
          */
-        this.graph.on("node:mouseleave", (_nodecurren: any) => {
-            this.graph.getNodes().forEach((_node: any) => {
-                const ports = _node.getPorts();
-                ports.forEach((_item: any) => {
-                    _node.setPortProp(_item.id, "attrs/circle", {
-                        style: { visibility: "hidden" },
-                    });
-                });
-            });
-        });
+        // this.graph.on("node:mouseleave", (_nodecurren: any) => {
+        //     this.graph.getNodes().forEach((_node: any) => {
+        //         const ports = _node.getPorts();
+        //         ports.forEach((_item: any) => {
+        //             _node.setPortProp(_item.id, "attrs/circle", {
+        //                 style: { visibility: "hidden" },
+        //             });
+        //         });
+        //     });
+        // });
         return this.graph;
     }
     /**
      * 重写拖拽生成节点验证
      * @param node 
      */
-    validateNode(node: Node): NodeTypeEnum {
-        console.log(this);
+    validateNode(node: Node): boolean {
+        console.log(this.graph.getNodes());
         /**
          * 判断开始/结束节点是否存在
          */
@@ -154,11 +154,10 @@ export class GraphServices implements IGraphServices {
             if (isexitsIndex.length > 0) {
                 
                 this.graph.removeNode(node.id);
-                return node.data.NodeType
+                return false
             }
-
         }
-        return node.data.NodeType
+        return true
     }
     /***
      * 重置节点或者线的Style样式

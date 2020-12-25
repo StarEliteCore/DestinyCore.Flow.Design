@@ -7,7 +7,7 @@ export interface IGraphServices {
      * @param _graphconfig 
      */
     CreateGraph(_graphconfig:IGraphConfig): Graph;
-    validateNode(node: Node):NodeTypeEnum;
+    validateNode(node: Node):boolean;
     graph: Graph;
     addonDnd:Addon.Dnd;
     CreateAddon(_graph:Graph):void;

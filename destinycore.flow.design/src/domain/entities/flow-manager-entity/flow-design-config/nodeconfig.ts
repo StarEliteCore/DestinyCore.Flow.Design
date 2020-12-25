@@ -22,7 +22,7 @@ export const rectNodeBaseConfig = {
     height: 40, // Number，可选，节点大小的 height 值
     ports: {
         groups: {
-            in: {
+            left: {
                 attrs: {
                     circle: {
                         r: 4,
@@ -30,12 +30,12 @@ export const rectNodeBaseConfig = {
                         stroke: "#5f95ff",
                         strokeWidth: 1,
                         fill: "#fff",
-                        visibility: "hidden"
+                        visibility: "visible"
                     },
                 },
                 position: "left",
             },
-            out: {
+            top: {
                 attrs: {
                     circle: {
                         r: 4,
@@ -43,15 +43,43 @@ export const rectNodeBaseConfig = {
                         stroke: "#5f95ff",
                         strokeWidth: 1,
                         fill: "#fff",
-                        visibility: "hidden"
+                        visibility: "visible"
+                    },
+                },
+                position: "top",
+            },
+            right: {
+                attrs: {
+                    circle: {
+                        r: 4,
+                        magnet: true,
+                        stroke: "#5f95ff",
+                        strokeWidth: 1,
+                        fill: "#fff",
+                        visibility: "visible"
                     },
                 },
                 position: "right",
             },
+            bottom: {
+                attrs: {
+                    circle: {
+                        r: 4,
+                        magnet: true,
+                        stroke: "#5f95ff",
+                        strokeWidth: 1,
+                        fill: "#fff",
+                        visibility: "visible"
+                    },
+                },
+                position: "bottom",
+            },
         },
         items: [
-            { id: Guid.create(), group: "in" },
-            { id: Guid.create(), group: "out" },
+            { id: Guid.create(), group: "left" },
+            { id: Guid.create(), group: "top" },
+            { id: Guid.create(), group: "right" },
+            { id: Guid.create(), group: "bottom" },
         ],
     },
 
@@ -80,7 +108,7 @@ export const circleNodeBaseConfig = {
     parent: "",//
     ports: {
         groups: {
-            out: {
+            left: {
                 attrs: {
                     circle: {
                         r: 4,
@@ -88,14 +116,56 @@ export const circleNodeBaseConfig = {
                         stroke: "#fb982c",
                         strokeWidth: 1,
                         fill: "#fff",
-                        visibility: "hidden"
+                        visibility: "visible"
+                    },
+                },
+                position: "left",
+            },
+            top: {
+                attrs: {
+                    circle: {
+                        r: 4,
+                        magnet: true,
+                        stroke: "#fb982c",
+                        strokeWidth: 1,
+                        fill: "#fff",
+                        visibility: "visible"
+                    },
+                },
+                position: "top",
+            },
+            right: {
+                attrs: {
+                    circle: {
+                        r: 4,
+                        magnet: true,
+                        stroke: "#fb982c",
+                        strokeWidth: 1,
+                        fill: "#fff",
+                        visibility: "visible"
                     },
                 },
                 position: "right",
             },
+            bottom: {
+                attrs: {
+                    circle: {
+                        r: 4,
+                        magnet: true,
+                        stroke: "#fb982c",
+                        strokeWidth: 1,
+                        fill: "#fff",
+                        visibility: "visible"
+                    },
+                },
+                position: "bottom",
+            },
         },
         items: [
-            { id: Guid.create().toString(), group: "out" },
+            { id: Guid.create().toString(), group: "left" },
+            { id: Guid.create().toString(), group: "top" },
+            { id: Guid.create().toString(), group: "right" },
+            { id: Guid.create().toString(), group: "bottom" },
         ],
     },
 }

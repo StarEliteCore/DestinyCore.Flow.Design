@@ -30,7 +30,7 @@ export default class FlowDesignPanel extends Vue {
   private workFlowDto: WorkFlowDto = new WorkFlowDto()
   private graph!: Graph;
   private addonDnd: any;
-  private history!: Graph.HistoryManager;
+  // private history!: Graph.HistoryManager;
   private canRedo: boolean = false;
   private canUndo: boolean = false;
   // history(){
@@ -47,6 +47,12 @@ export default class FlowDesignPanel extends Vue {
   private igraphServices!: IGraphServices;
   @DecoratorProvider(IocTypes.FlowPanelServices)
   private flowmanagerServices!: IFlowManagerServices
+  // get canRedo() {
+  //   return (typeof this.graph!=="undefined" &&  typeof this.graph.history!=="undefined") ? this.graph.history.canRedo() : false;
+  // }
+  // get canUndo() {
+  //   return (typeof this.graph!=="undefined" &&  typeof this.graph.history!=="undefined") ? this.graph.history.canUndo() : false;
+  // }
   mounted() {
     this.flowgraphEntity.nodes = NodeListArr;
     this.flowgraphEntity.edges = LineListArr;
@@ -65,15 +71,19 @@ export default class FlowDesignPanel extends Vue {
      * 初始化画布
      */
     this.graph = this.igraphServices.CreateGraph(config);// GraphConstruction.createGraph();
-    this.history = this.graph.history;
+    // this.history = this.graph.history;
+    this.graph.history.on("change", () => {
+      this.canRedo = this.graph.history.canRedo();
+      this.canUndo = this.graph.history.canUndo();
+    })
     // console.log(this.graph)
     /**
      * 初始化画布节点或者线
      */
-    this.graph.fromJSON(this.flowgraphEntity);
+    // this.graph.fromJSON(this.flowgraphEntity);
     const validateNode = (node: Node) => {
       const result = this.igraphServices.validateNode(node);
-      if (result !== NodeTypeEnum.workNode) {
+      if (!result  && node.data.NodeType!== NodeTypeEnum.workNode) {
         this.$message.warning(
           typeof node.data.NodeType !== "undefined" &&
             node.data.NodeType === NodeTypeEnum.startNode
@@ -110,8 +120,10 @@ export default class FlowDesignPanel extends Vue {
           label: "任务节点",
           ports: {
             items: [
-              { id: Guid.create().toString(), group: "in" },
-              { id: Guid.create().toString(), group: "out" },
+              { id: Guid.create().toString(), group: "left" },
+              { id: Guid.create().toString(), group: "top" },
+              { id: Guid.create().toString(), group: "right" },
+              { id: Guid.create().toString(), group: "bottom" },
             ],
           },
           data: {
@@ -122,7 +134,12 @@ export default class FlowDesignPanel extends Vue {
           id: Guid.create.toString(),
           label: "开始节点",
           ports: {
-            items: [{ id: Guid.create().toString(), group: "out" }],
+            items: [
+              { id: Guid.create().toString(), group: "left" },
+              { id: Guid.create().toString(), group: "top" },
+              { id: Guid.create().toString(), group: "right" },
+              { id: Guid.create().toString(), group: "bottom" },
+            ],
           },
           data: {
             NodeType: NodeTypeEnum.startNode,
@@ -202,9 +219,11 @@ export default class FlowDesignPanel extends Vue {
     this.flowmanagerServices.create(this.workFlowDto)
   }
   onRedo() {
-    this.history.canRedo() &&  this.history.redo();
+    this.graph.history.redo();
   }
   onUndo() {
-    this.history.canUndo() &&  this.history.undo();
+    // console.log(this.history.canUndo())
+    // this.history.canUndo() && this.history.undo();
+    this.graph.history.undo();
   }
 }
