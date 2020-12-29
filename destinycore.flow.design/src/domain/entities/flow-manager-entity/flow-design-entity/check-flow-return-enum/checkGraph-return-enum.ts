@@ -13,7 +13,11 @@ export enum CheckGraphEdgeConnectedReturnEnum {
     /**
      * 链接目标不可为开始节点
      */
-    noStart,
+    nodeStart,
+    /**
+     * 源节点不能为结束节点
+     */
+    nodeSourceEnd,
     /**
      * 两个节点不允许循环连接
      */
@@ -26,6 +30,4 @@ export enum CheckGraphEdgeConnectedReturnEnum {
      * 不可链接相同节点
      */
     cannotLinktheSameNode
-
-
 }

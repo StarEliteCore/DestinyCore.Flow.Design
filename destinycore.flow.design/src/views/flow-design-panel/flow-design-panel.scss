@@ -9,6 +9,9 @@
         height: 100%;
         flex: 0 0 120px;
         padding: 10px;
+        button{
+            margin-bottom: 10px;
+        }
     }
     .flow-design-panel-graph{
         width: calc(100% - 120px);

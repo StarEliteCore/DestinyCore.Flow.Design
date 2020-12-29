@@ -102,38 +102,11 @@ export default class GraphConstruction {
        *
        */
       connecting: {
-        // 边的起点或者终点只能是节点或者连接桩。
-        dangling: false,
-        snap: {
-          // 距离节点或者连接桩 5px 时会触发自动吸附
-          radius: 10,
-        },
-        // createEdge() {//设置连接时为虚线
-        //   return _this.graph.createEdge({
-        //     attrs: {
-        //       line: {
-        //         strokeDasharray: '5 5'
-        //       },
-        //     },
-        //   })
-        // },
-        // TODO: 检测连接 也可以在connected事件判断
-        // validateConnection({ edge, sourceCell, targetCell }) {
-        //   if (edge &&
-        //     (
-        //       edge.hasLoop() ||
-        //       edge.getTargetPortId() === "undefined" ||
-        //       edge.getTargetPortId() === null ||
-        //       (
-        //         sourceCell && (sourceCell.data.nodeType === ENodeType.end) &&
-        //         targetCell && (targetCell.data.nodeType === ENodeType.start)
-        //       )
-        //     )
-        //   ) {
-        //     return false;
-        //   }
-        //   return true;
-        // }
+        dangling: false, // 边的起点或者终点只能是节点或者连接桩。
+        snap:true,//当 snap 设置为 true 时连线的过程中距离节点或者连接桩 50px 时会触发自动吸附
+        connectionPoint:"anchor",//指定连接点，默认值为 boundary。
+        anchor:"center",// 不允许连接到节点上(只能连接到连接桩上)
+        allowNode:false,//不允许连接到节点上(只能连接到连接桩上)
       },
     });
     graph.drawBackground({

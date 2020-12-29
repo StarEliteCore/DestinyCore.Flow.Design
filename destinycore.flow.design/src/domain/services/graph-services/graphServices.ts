@@ -1,15 +1,17 @@
 import { injectable } from "inversify";
 import "reflect-metadata"
 import { CheckGraphEdgeConnectedReturnEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/check-flow-return-enum/checkGraph-return-enum";
-import { NodeTypeEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-enum";
+import { ENodeShape, NodeTypeEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-enum";
 import GraphConstruction from "@/sharad/factory/graphFactory";
 import IGraphConfig from "@/sharad/factory/Igraph";
-import { Addon, Edge, Graph, Node } from "@antv/x6";
+import { Addon, Edge, FunctionExt, Graph, Node, Shape } from "@antv/x6";
 import { IGraphServices } from "./IgraphServices";
+import { INodeTool } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/node-button-config-entity";
 
 @injectable()
 export class GraphServices implements IGraphServices {
     CreateAddon(_graph: Graph): void {
+        console.log(_graph)
         const validateNode = (node: Node) => {
             if (
                 node.data.NodeType === NodeTypeEnum.endNode ||
@@ -70,32 +72,6 @@ export class GraphServices implements IGraphServices {
             console.log("节点被双击了！！！！！！！！", nodecurren);
         });
         /**
-         * 线连接到锚点事件
-         */
-        this.graph.on("edge:connected", (addedge: any) => {
-            const result = this.checkEdgeConnected(
-                this.graph,
-                addedge
-            );
-            switch (result) {
-                case CheckGraphEdgeConnectedReturnEnum.normalNoOneself:
-                    // this.$message.warning("链接目标不可为自身!", 3);
-                    break;
-                case CheckGraphEdgeConnectedReturnEnum.cannotLinktheSameNode:
-                    // this.$message.warning("不可链接相同节点!", 3);
-                    break;
-                case CheckGraphEdgeConnectedReturnEnum.noStart:
-                    // this.$message.warning("链接目标不可为开始节点!", 3);
-                    break;
-                case CheckGraphEdgeConnectedReturnEnum.loopNotAllowed:
-                    // this.$message.warning("两个节点不允许循环连接!", 3);
-                    break;
-                case CheckGraphEdgeConnectedReturnEnum.linkToPoint:
-                    // this.$message.warning("请连接到连接点内!", 3);
-                    break;
-            }
-        });
-        /**
          * 单击线事件
          */
         this.graph.on("edge:click", (edgecurren: any) => {
@@ -104,34 +80,33 @@ export class GraphServices implements IGraphServices {
             edgecurren.edge.zIndex = 1000;
             edgecurren.edge.attr("line/stroke", "#41d0ce");
         });
+        this.graph!.on("blank:click", () => {
+            this.reset();
+        });
         /*
          * 鼠标移动到节点显示连接桩
          */
-        // this.graph.on("node:mouseenter", (_nodecurren: any) => {
-        //     // console.log(_nodecurren)
-        //     this.graph.getNodes().forEach((_node: any) => {
-        //         const ports = _node.getPorts();
-        //         ports.forEach((_item: any) => {
-        //             _node.setPortProp(_item.id, "attrs/circle", {
-        //                 style: { visibility: "visible" },
-        //             });
-        //         });
-        //     });
-        // });
+        this.graph.on("node:mouseenter", FunctionExt.debounce(() => {
+            const ports = document.querySelectorAll(".x6-port-body") as NodeListOf<
+                SVGAElement
+            >;
+            this.showPorts(ports, true);
+        }),500);
         /**
          * 鼠标移动出节点隐藏连接桩
          */
-        // this.graph.on("node:mouseleave", (_nodecurren: any) => {
-        //     this.graph.getNodes().forEach((_node: any) => {
-        //         const ports = _node.getPorts();
-        //         ports.forEach((_item: any) => {
-        //             _node.setPortProp(_item.id, "attrs/circle", {
-        //                 style: { visibility: "hidden" },
-        //             });
-        //         });
-        //     });
-        // });
+        this.graph.on("node:mouseleave", FunctionExt.debounce(() => {
+            const ports = document.querySelectorAll(".x6-port-body") as NodeListOf<
+                SVGAElement
+            >;
+            this.showPorts(ports, false);
+        }),500);
         return this.graph;
+    }
+    private showPorts(ports: NodeListOf<SVGAElement>, show: boolean) {
+        for (let i = 0, len = ports.length; i < len; i = i + 1) {
+            ports[i].style.visibility = show ? "visible" : "hidden";
+        }
     }
     /**
      * 重写拖拽生成节点验证
@@ -143,16 +118,16 @@ export class GraphServices implements IGraphServices {
          * 判断开始/结束节点是否存在
          */
         if (
-            node.data.NodeType === NodeTypeEnum.endNode ||
-            node.data.NodeType === NodeTypeEnum.startNode
+            node.data.nodeType === NodeTypeEnum.endNode ||
+            node.data.nodeType === NodeTypeEnum.startNode
         ) {
             const isexitsIndex = this.graph.getNodes().filter(
                 (_node: any) =>
-                    typeof _node.data.NodeType !== "undefined" &&
-                    _node.data.NodeType === node.data.NodeType
+                    typeof _node.data.nodeType !== "undefined" &&
+                    _node.data.nodeType === node.data.nodeType
             );
             if (isexitsIndex.length > 0) {
-                
+
                 this.graph.removeNode(node.id);
                 return false
             }
@@ -200,42 +175,90 @@ export class GraphServices implements IGraphServices {
     }
     /**
      * 判断线连接节点条件
-     * @param _graph 
      * @param addedge 
      */
-    private checkEdgeConnected(_graph: Graph, addedge: any): CheckGraphEdgeConnectedReturnEnum {
-        const allEdgesArr = _graph.getEdges();
-        const sourceNode = addedge.edge.getSourceNode();
-        const targetNode = addedge.edge.getTargetNode();
-        if (addedge.edge.hasLoop()) {
-            _graph.removeEdge(addedge.edge.id);
+    checkEdgeConnected(edge: Edge): CheckGraphEdgeConnectedReturnEnum {
+        if (edge.hasLoop()) {
+            this.graph.removeEdge(edge.id);
             return CheckGraphEdgeConnectedReturnEnum.normalNoOneself;
         }
-        const isexitsarr = allEdgesArr.filter((_edge: any) => typeof sourceNode.id !== "undefined" && _edge.source.cell == sourceNode.id && (typeof targetNode.id !== "undefined" && _edge.target.cell == targetNode.id) && _edge.id !== addedge.edge.id);
-        if (isexitsarr.length > 0) {
-            _graph.removeEdge(addedge.edge.id);
-            return CheckGraphEdgeConnectedReturnEnum.cannotLinktheSameNode
-        }
-        if ((targetNode && targetNode.data.NodeType === NodeTypeEnum.startNode)) {
-            _graph.removeEdge(addedge.edge.id);
-            return CheckGraphEdgeConnectedReturnEnum.noStart
-        }
-        // 避免连线节点形成闭环
-        // 避免两个节点之间连接同样的线
-        const filter = _graph.getEdges().filter((_edge: Edge) => {
-            const target = _edge.getTargetNode();
-            const source = _edge.getSourceNode();
-            return (_edge.id !== addedge.edge.id) && (sourceNode.id === target?.id && targetNode.id === source?.id
-                || sourceNode.id === source?.id && targetNode.id === target?.id);
-        })
-        if (filter.length > 0) {
-            _graph.removeEdge(addedge.edge.id);
-            return CheckGraphEdgeConnectedReturnEnum.loopNotAllowed
-        }
-        if (typeof addedge.edge.getTargetPortId() === "undefined") {
-            _graph.removeEdge(addedge.edge.id);
+        /**
+        * 没有连接到连接桩上
+        */
+        if (
+            edge.getTargetCell() === null ||
+            typeof edge.getTargetPortId() === "undefined" ||
+            edge.getTargetPortId() === null
+        ) {
+            this.graph.removeEdge(edge.id);
             return CheckGraphEdgeConnectedReturnEnum.linkToPoint
         }
+
+        const sourceNode = edge.getSourceNode();
+        const targetNode = edge.getTargetNode();
+        const allEdgesArr = this.graph.getEdges();
+        if (targetNode && sourceNode) {
+            /**
+             * 判断是否是开始节点
+             */
+            if ((targetNode && targetNode.data.nodeType === NodeTypeEnum.startNode)) {
+                this.graph.removeEdge(edge.id);
+                return CheckGraphEdgeConnectedReturnEnum.nodeStart
+            }/**
+             * 判断结束节点
+             */
+            if ((sourceNode && sourceNode.data.nodeType === NodeTypeEnum.endNode)) {
+                this.graph.removeEdge(edge.id);
+                return CheckGraphEdgeConnectedReturnEnum.nodeSourceEnd
+            }
+            const isexitsarr = allEdgesArr.filter((_edge: any) => typeof sourceNode.id !== "undefined" && _edge.source.cell == sourceNode.id && (typeof targetNode.id !== "undefined" && _edge.target.cell == targetNode.id) && _edge.id !== edge.id);
+            if (isexitsarr.length > 0) {
+                this.graph.removeEdge(edge.id);
+                return CheckGraphEdgeConnectedReturnEnum.cannotLinktheSameNode
+            }
+            // 避免连线节点形成闭环
+            // 避免两个节点之间连接同样的线
+            const filter = this.graph.getEdges().filter((_edge: Edge) => {
+                const target = _edge.getTargetNode();
+                const source = _edge.getSourceNode();
+                return (_edge.id !== edge.id) && (sourceNode.id === target?.id && targetNode.id === source?.id
+                    || sourceNode.id === source?.id && targetNode.id === target?.id);
+            })
+            if (filter.length > 0) {
+                this.graph.removeEdge(edge.id);
+                return CheckGraphEdgeConnectedReturnEnum.loopNotAllowed
+            }
+        }
         return CheckGraphEdgeConnectedReturnEnum.None;
+    }
+    /**
+     * 添加节点
+     * @param _node 
+     */
+    addNode(_node: INodeTool): Node | undefined {
+        let node: Node | undefined;
+        const nodeImage = require("@/assets/icons/" + NodeTypeEnum[_node.type] + ".png");
+        const baseData = {
+            attrs: {
+                label: {
+                    text: _node.label ? _node.label : _node.shape
+                },
+                image: {
+                    "xlink:Href": nodeImage
+                }
+            },
+            data: {
+                nodeType: _node.type
+            }
+        };
+        switch (_node.shape) {
+            case ENodeShape[ENodeShape.rect]:
+                node = new Shape.Rect(baseData)
+                break;
+            case ENodeShape[ENodeShape.circle]:
+                node = new Shape.Circle(baseData);
+                break;
+        }
+        return node;
     }
 }

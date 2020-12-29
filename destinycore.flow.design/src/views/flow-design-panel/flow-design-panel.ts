@@ -1,4 +1,4 @@
-import { Addon, Graph, Shape } from "@antv/x6";
+import { Addon, Graph } from "@antv/x6";
 import {
   ICellPortEntity,
   ILineEntity,
@@ -9,19 +9,20 @@ import {
 } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-portsbase-entity";
 import Component from "vue-class-component";
 import DecoratorProvider from "@/sharad/destinycoreIoc/decoratorProvider";
-import { Guid } from "guid-typescript";
 import IGraphConfig from "@/sharad/factory/Igraph";
 import { INodeEntity } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
 import { IocTypes } from "@/sharad/destinycoreIoc/iocSymbolTypes";
-import { LineListArr } from "@/domain/mock/linemock";
 import { Node } from "@antv/x6/lib/model/node";
-import { NodeListArr } from "@/domain/mock/nodemock";
 import { NodeTypeEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-enum";
 import Vue from "vue";
 import { IGraphServices } from "@/domain/services/graph-services/IgraphServices";
 import { IFlowManagerServices } from "@/domain/services/flow-manager-services/IFlowManagerServices";
 import { WorkFlowDto } from "@/domain/entities/flow-manager-entity/workFlowDto";
 import { IFlowgraphEntity } from "@/domain/entities/flow-manager-entity/flow-design-entity/flowgraphEntity";
+import { CheckGraphEdgeConnectedReturnEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/check-flow-return-enum/checkGraph-return-enum";
+import { validateEdgeMessage } from "@/domain/entities/flow-manager-entity/flow-design-entity/check-flow-return-enum/validateEdgeMessage";
+import * as NodeTool from "@/domain/entities/flow-manager-entity/flow-design-config/node-button-config";
+import { INodeTool } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/node-button-config-entity";
 
 @Component
 export default class FlowDesignPanel extends Vue {
@@ -30,12 +31,10 @@ export default class FlowDesignPanel extends Vue {
   private workFlowDto: WorkFlowDto = new WorkFlowDto()
   private graph!: Graph;
   private addonDnd: any;
+  private buttonNodeTool = NodeTool.buttonNodeToolList
   // private history!: Graph.HistoryManager;
   private canRedo: boolean = false;
   private canUndo: boolean = false;
-  // history(){
-  //   return this.graph.history
-  // }
   /**
    * 反序列化出的流程设计器对象
    */
@@ -43,24 +42,12 @@ export default class FlowDesignPanel extends Vue {
     edges: [],
     nodes: []
   };
+
   @DecoratorProvider(IocTypes.GraphServices)
   private igraphServices!: IGraphServices;
   @DecoratorProvider(IocTypes.FlowPanelServices)
   private flowmanagerServices!: IFlowManagerServices
-  // get canRedo() {
-  //   return (typeof this.graph!=="undefined" &&  typeof this.graph.history!=="undefined") ? this.graph.history.canRedo() : false;
-  // }
-  // get canUndo() {
-  //   return (typeof this.graph!=="undefined" &&  typeof this.graph.history!=="undefined") ? this.graph.history.canUndo() : false;
-  // }
   mounted() {
-    this.flowgraphEntity.nodes = NodeListArr;
-    this.flowgraphEntity.edges = LineListArr;
-    // console.log(this.iflowmanagerServices)
-    /**
-     * 获取实列第一种
-     */
-    // const services = serviceProvider.getService<ITestService>(IocTypes.TestService)
     const config: IGraphConfig = {
       container: "container",
       miniMapContainer: "destiny-minimap",
@@ -76,17 +63,23 @@ export default class FlowDesignPanel extends Vue {
       this.canRedo = this.graph.history.canRedo();
       this.canUndo = this.graph.history.canUndo();
     })
-    // console.log(this.graph)
+    /**
+    * 线连接到锚点事件
+    */
+    this.graph.on("edge:connected", ({ edge }) => {
+      const validate: CheckGraphEdgeConnectedReturnEnum = this.igraphServices.checkEdgeConnected(edge);
+      const actions = validateEdgeMessage.get(validate);
+      typeof actions !== "undefined" && this.$Message.warning(actions);
+    });
     /**
      * 初始化画布节点或者线
      */
-    // this.graph.fromJSON(this.flowgraphEntity);
     const validateNode = (node: Node) => {
       const result = this.igraphServices.validateNode(node);
-      if (!result  && node.data.NodeType!== NodeTypeEnum.workNode) {
+      if (!result && node.data.nodeType !== NodeTypeEnum.workNode) {
         this.$message.warning(
-          typeof node.data.NodeType !== "undefined" &&
-            node.data.NodeType === NodeTypeEnum.startNode
+          typeof node.data.nodeType !== "undefined" &&
+            node.data.nodeType === NodeTypeEnum.startNode
             ? "流程只允许有一个开始节点!"
             : "流程只允许有一个结束节点!",
           3
@@ -110,41 +103,8 @@ export default class FlowDesignPanel extends Vue {
    * 开始拖拽
    * @param e 
    */
-  startDrag(e: any) {
-    const target = e.currentTarget;
-    const type = target.getAttribute("data-type");
-    const node =
-      type === "rect"
-        ? new Shape.Rect({
-          id: Guid.create.toString(),
-          label: "任务节点",
-          ports: {
-            items: [
-              { id: Guid.create().toString(), group: "left" },
-              { id: Guid.create().toString(), group: "top" },
-              { id: Guid.create().toString(), group: "right" },
-              { id: Guid.create().toString(), group: "bottom" },
-            ],
-          },
-          data: {
-            NodeType: NodeTypeEnum.workNode,
-          },
-        })
-        : new Shape.Circle({
-          id: Guid.create.toString(),
-          label: "开始节点",
-          ports: {
-            items: [
-              { id: Guid.create().toString(), group: "left" },
-              { id: Guid.create().toString(), group: "top" },
-              { id: Guid.create().toString(), group: "right" },
-              { id: Guid.create().toString(), group: "bottom" },
-            ],
-          },
-          data: {
-            NodeType: NodeTypeEnum.startNode,
-          },
-        });
+  startDrag(e: any, item: INodeTool) {
+    const node = this.igraphServices.addNode(item)
     this.addonDnd.start(node, e as any);
   }
   /**

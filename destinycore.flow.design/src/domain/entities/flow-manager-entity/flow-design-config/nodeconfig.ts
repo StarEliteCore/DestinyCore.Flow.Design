@@ -1,25 +1,6 @@
+
 import { Guid } from 'guid-typescript';
-/**
- * Rect节点默认配置
- */
-export const rectNodeBaseConfig = {
-    attrs: {
-        body: {
-            fill: "rgba(95,149,255,0.05)",
-            stroke: "#5f95ff",
-            strokeWidth: 1,
-        },
-        label: {
-            fontSize: 12,
-            fill: "black",
-        },
-    },
-    visible: true,
-    zIndex: 1,
-    x: 40, // Number，必选，节点位置的 x 值
-    y: 40, // Number，必选，节点位置的 y 值
-    width: 80, // Number，可选，节点大小的 width 值
-    height: 40, // Number，可选，节点大小的 height 值
+const nodePortsConfig = {
     ports: {
         groups: {
             left: {
@@ -30,7 +11,7 @@ export const rectNodeBaseConfig = {
                         stroke: "#5f95ff",
                         strokeWidth: 1,
                         fill: "#fff",
-                        visibility: "visible"
+                        visibility: "hidden"
                     },
                 },
                 position: "left",
@@ -43,7 +24,7 @@ export const rectNodeBaseConfig = {
                         stroke: "#5f95ff",
                         strokeWidth: 1,
                         fill: "#fff",
-                        visibility: "visible"
+                        visibility: "hidden"
                     },
                 },
                 position: "top",
@@ -56,7 +37,7 @@ export const rectNodeBaseConfig = {
                         stroke: "#5f95ff",
                         strokeWidth: 1,
                         fill: "#fff",
-                        visibility: "visible"
+                        visibility: "hidden"
                     },
                 },
                 position: "right",
@@ -69,7 +50,7 @@ export const rectNodeBaseConfig = {
                         stroke: "#5f95ff",
                         strokeWidth: 1,
                         fill: "#fff",
-                        visibility: "visible"
+                        visibility: "hidden"
                     },
                 },
                 position: "bottom",
@@ -82,10 +63,71 @@ export const rectNodeBaseConfig = {
             { id: Guid.create(), group: "bottom" },
         ],
     },
-
 }
 /**
- * Circle节点默认配置
+ * 圆节点Body配置
+ */
+const circleBody = {
+    body: {
+        stroke: '#fb982c',
+        strokeWidth: 1,
+        fill: "rgba(251,152,44,0.05)"
+    },
+}
+/**
+ * 长方形节点Body配置
+ */
+const rectBody = {
+    body: {
+        fill: "rgba(95,149,255,0.05)",
+        stroke: "#5f95ff",
+        strokeWidth: 1,
+        rx: 5, // 圆角
+        ry: 5
+    },
+}
+/**
+ * 长方形节点默认配置
+ */
+export const rectNodeBaseConfig = {
+    attrs: {
+        ...rectBody,
+        label: {
+            x: 15,
+            fill: "#6a6c8a",
+            fontWeight: "bold"
+        },
+        image: {
+            width: 30,
+            height: 30,
+            x: 5,
+            y: 5
+        }
+    },
+    ...nodePortsConfig,
+    visible: true,
+    zIndex: 1,
+    x: 40, // Number，必选，节点位置的 x 值
+    y: 40, // Number，必选，节点位置的 y 值
+    width: 120, // Number，可选，节点大小的 width 值
+    height: 40, // Number，可选，节点大小的 height 值
+    markup: [
+        {
+            tagName: "rect",
+            selector: "body"
+        },
+        {
+            tagName: "image",
+            selector: "image"
+        },
+        {
+            tagName: "text",
+            selector: "label"
+        }
+    ],
+}
+/**
+ * 圆节点默认配置
  */
 export const circleNodeBaseConfig = {
     attrs: {
@@ -93,12 +135,15 @@ export const circleNodeBaseConfig = {
             fontSize: 12,
             fill: 'black',
         },
-        body: {
-            stroke: '#fb982c',
-            strokeWidth: 1,
-            fill: "rgba(251,152,44,0.05)"
+        ...circleBody,
+        image: {
+            width: 40,
+            height: 40,
+            x: 5,
+            y: 5
         },
     },
+
     visible: true,
     zIndex: 1,
     x: 40, // Number，必选，节点位置的 x 值
@@ -106,66 +151,18 @@ export const circleNodeBaseConfig = {
     width: 50, // Number，可选，节点大小的 width 值
     height: 50, // Number，可选，节点大小的 height 值
     parent: "",//
-    ports: {
-        groups: {
-            left: {
-                attrs: {
-                    circle: {
-                        r: 4,
-                        magnet: true,
-                        stroke: "#fb982c",
-                        strokeWidth: 1,
-                        fill: "#fff",
-                        visibility: "visible"
-                    },
-                },
-                position: "left",
-            },
-            top: {
-                attrs: {
-                    circle: {
-                        r: 4,
-                        magnet: true,
-                        stroke: "#fb982c",
-                        strokeWidth: 1,
-                        fill: "#fff",
-                        visibility: "visible"
-                    },
-                },
-                position: "top",
-            },
-            right: {
-                attrs: {
-                    circle: {
-                        r: 4,
-                        magnet: true,
-                        stroke: "#fb982c",
-                        strokeWidth: 1,
-                        fill: "#fff",
-                        visibility: "visible"
-                    },
-                },
-                position: "right",
-            },
-            bottom: {
-                attrs: {
-                    circle: {
-                        r: 4,
-                        magnet: true,
-                        stroke: "#fb982c",
-                        strokeWidth: 1,
-                        fill: "#fff",
-                        visibility: "visible"
-                    },
-                },
-                position: "bottom",
-            },
+    markup: [
+        {
+            tagName: "circle",
+            selector: "body"
         },
-        items: [
-            { id: Guid.create().toString(), group: "left" },
-            { id: Guid.create().toString(), group: "top" },
-            { id: Guid.create().toString(), group: "right" },
-            { id: Guid.create().toString(), group: "bottom" },
-        ],
-    },
+        {
+            tagName: "image",
+            selector: "image"
+        }
+    ],
+    ...nodePortsConfig,
 }
+
+
+

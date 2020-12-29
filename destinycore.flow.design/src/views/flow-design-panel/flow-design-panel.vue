@@ -1,12 +1,14 @@
 <template>
   <div id="flow-design-panel">
     <nav class="flow-design-panel-left">
-      <div>
+
+      <a-button v-for="item in  buttonNodeTool " :key="item.type"  draggable="true" data-type="circle" @mousedown.native.prevent="$event=>startDrag($event,item)">{{item.label}}</a-button>
+      <!-- <div>
         <a-button type="primary" draggable="true" data-type="circle" @mousedown.prevent="startDrag">开始节点</a-button>
       </div>
       <div>
         <a-button type="primary" draggable="true" data-type="rect" @mousedown.prevent="startDrag">任务节点</a-button>
-      </div>
+      </div> -->
     </nav>
     <!-- {{history}} -->
     <div class="flow-design-panel-graph">

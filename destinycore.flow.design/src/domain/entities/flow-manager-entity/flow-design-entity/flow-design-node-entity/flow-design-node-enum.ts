@@ -15,3 +15,13 @@ export enum NodeTypeEnum {
      */
     endNode = 10,
   }
+
+
+  /**
+ * 节点形状类型
+ */
+export enum ENodeShape {
+  circle,
+  rect,
+  polygon
+}

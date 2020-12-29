@@ -45,11 +45,11 @@ export interface INodeEntity extends IEntity<string> {
   ports: IPorts
 }
 
-export interface INodeDataEntity{
+export interface INodeDataEntity {
   /**
    * 节点类型
    */
-  NodeType:NodeTypeEnum;
+  NodeType: NodeTypeEnum;
   /**
    * 节点基础配置
    */
@@ -70,12 +70,12 @@ export interface INodeDataEntity{
 /**
  * 
  */
-export class ApprovalStrategy{
+export class ApprovalStrategy {
 
 }
 /**
  * 节点抄送对象
  */
-export class CCStrategy{
+export class CCStrategy {
 
 }
