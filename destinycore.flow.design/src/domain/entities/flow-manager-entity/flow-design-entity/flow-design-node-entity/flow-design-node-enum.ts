@@ -33,11 +33,11 @@ export enum ProcessingStrategyEnum {
   /**
    * 一人同意即可
    */
-  oneagreed = 0,
+  oneAgreed = 0,
   /**
    * 所有人同意
    */
-  allagreed = 5,
+  allAgreed = 5,
 }
 /**
  * 审签类型

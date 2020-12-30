@@ -1,7 +1,12 @@
-import { IEntity } from "@/sharad/baseentity/IEntity";
+import {
+  NodeTypeEnum,
+  ProcessingStrategyEnum,
+  SignaturetypeEnum,
+} from "./flow-design-node-enum";
+
 import { Guid } from "guid-typescript";
-import { NodeTypeEnum, ProcessingStrategyEnum, SignaturetypeEnum } from './flow-design-node-enum';
-import { IPorts } from './flow-design-portsbase-entity';
+import { IEntity } from "@/sharad/baseentity/IEntity";
+import { IPorts } from "./flow-design-portsbase-entity";
 
 /**
  * 节点和边的基类
@@ -42,7 +47,7 @@ export interface INodeEntity extends IEntity<string> {
   /**
    * 链接桩数组
    */
-  ports: IPorts
+  ports: IPorts;
 }
 
 export interface INodeDataEntity {
@@ -82,21 +87,17 @@ export class NodeBasicConfiguration {
   /**
    * 节点处理策略
    */
-  processingStrategy:ProcessingStrategyEnum=ProcessingStrategyEnum.oneagreed;
+  processingStrategy: ProcessingStrategyEnum = ProcessingStrategyEnum.oneAgreed;
   /**
    * 审签类型
    */
-  signaturetype:SignaturetypeEnum=SignaturetypeEnum.noApprovalComments
+  signatureType: SignaturetypeEnum = SignaturetypeEnum.noApprovalComments;
 }
 /**
- * 
+ *
  */
-export class ApprovalStrategy {
-
-}
+export class ApprovalStrategy {}
 /**
  * 节点抄送对象
  */
-export class CCStrategy {
-
-}
+export class CCStrategy {}

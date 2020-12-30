@@ -1,3 +1,5 @@
+import * as NodeTool from "@/domain/entities/flow-manager-entity/flow-design-config/node-button-config";
+
 import { Addon, Graph } from "@antv/x6";
 import {
   ICellPortEntity,
@@ -7,47 +9,52 @@ import {
   IGroupsRelation,
   IPorts,
 } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-portsbase-entity";
+import {
+  INodeDataEntity,
+  INodeEntity,
+  NodeBasicConfiguration,
+} from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
+
+import { CheckGraphEdgeConnectedReturnEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/check-flow-return-enum/checkGraph-return-enum";
 import Component from "vue-class-component";
 import DecoratorProvider from "@/sharad/destinycoreIoc/decoratorProvider";
+import { IFlowManagerServices } from "@/domain/services/flow-manager-services/IFlowManagerServices";
+import { IFlowgraphEntity } from "@/domain/entities/flow-manager-entity/flow-design-entity/flowgraphEntity";
 import IGraphConfig from "@/sharad/factory/Igraph";
-import { INodeEntity } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
+import { IGraphServices } from "@/domain/services/graph-services/IgraphServices";
+import { INodeTool } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/node-button-config-entity";
 import { IocTypes } from "@/sharad/destinycoreIoc/iocSymbolTypes";
 import { Node } from "@antv/x6/lib/model/node";
 import { NodeTypeEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-enum";
 import Vue from "vue";
-import { IGraphServices } from "@/domain/services/graph-services/IgraphServices";
-import { IFlowManagerServices } from "@/domain/services/flow-manager-services/IFlowManagerServices";
 import { WorkFlowDto } from "@/domain/entities/flow-manager-entity/workFlowDto";
-import { IFlowgraphEntity } from "@/domain/entities/flow-manager-entity/flow-design-entity/flowgraphEntity";
-import { CheckGraphEdgeConnectedReturnEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/check-flow-return-enum/checkGraph-return-enum";
 import { validateEdgeMessage } from "@/domain/entities/flow-manager-entity/flow-design-entity/check-flow-return-enum/validateEdgeMessage";
-import * as NodeTool from "@/domain/entities/flow-manager-entity/flow-design-config/node-button-config";
-import { INodeTool } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/node-button-config-entity";
 
 @Component
 export default class FlowDesignPanel extends Vue {
   private nodeArray: Array<INodeEntity> = [];
   private lineArray: Array<ILineEntity> = [];
-  private workFlowDto: WorkFlowDto = new WorkFlowDto()
+  private workFlowDto: WorkFlowDto = new WorkFlowDto();
   private graph!: Graph;
   private addonDnd: any;
-  private buttonNodeTool = NodeTool.buttonNodeToolList
+  private buttonNodeTool = NodeTool.buttonNodeToolList;
   // private history!: Graph.HistoryManager;
   private canRedo: boolean = false;
   private canUndo: boolean = false;
   private visible: boolean = false;
+  private BasicConfiguration: NodeBasicConfiguration = new NodeBasicConfiguration();
   /**
    * 反序列化出的流程设计器对象
    */
   private flowgraphEntity: IFlowgraphEntity = {
     edges: [],
-    nodes: []
+    nodes: [],
   };
 
   @DecoratorProvider(IocTypes.GraphServices)
   private igraphServices!: IGraphServices;
   @DecoratorProvider(IocTypes.FlowPanelServices)
-  private flowmanagerServices!: IFlowManagerServices
+  private flowmanagerServices!: IFlowManagerServices;
   mounted() {
     const config: IGraphConfig = {
       container: "container",
@@ -58,16 +65,18 @@ export default class FlowDesignPanel extends Vue {
     /**
      * 初始化画布
      */
-    this.graph = this.igraphServices.CreateGraph(config);// GraphConstruction.createGraph();
+    this.graph = this.igraphServices.CreateGraph(config); // GraphConstruction.createGraph();
     this.graph.history.on("change", () => {
       this.canRedo = this.graph.history.canRedo();
       this.canUndo = this.graph.history.canUndo();
-    })
+    });
     /**
-    * 线连接到锚点事件
-    */
+     * 线连接到锚点事件
+     */
     this.graph.on("edge:connected", ({ edge }) => {
-      const validate: CheckGraphEdgeConnectedReturnEnum = this.igraphServices.checkEdgeConnected(edge);
+      const validate: CheckGraphEdgeConnectedReturnEnum = this.igraphServices.checkEdgeConnected(
+        edge
+      );
       const actions = validateEdgeMessage.get(validate);
       typeof actions !== "undefined" && this.$Message.warning(actions);
     });
@@ -75,8 +84,10 @@ export default class FlowDesignPanel extends Vue {
      * 双击节点事件
      */
     this.graph.on("node:dblclick", ({ node }) => {
-      console.log("节点被双击了！！！！！！！！", node);
-      this.visible = true;
+      if ((node.data as INodeDataEntity).NodeType === NodeTypeEnum.workNode) {
+        this.BasicConfiguration = (node.data as INodeDataEntity).BasicConfiguration;
+        this.visible = true;
+      }
     });
     /**
      * 初始化画布节点或者线
@@ -94,29 +105,32 @@ export default class FlowDesignPanel extends Vue {
         return false;
       }
       return true;
-    }
+    };
     /**
-      * 重写检查方法
-      * @param this
-      * @param node
-      */
+     * 重写检查方法
+     * @param this
+     * @param node
+     */
     this.addonDnd = new Addon.Dnd({
       target: this.graph,
       animation: true,
-      validateNode
+      validateNode,
     });
   }
   /**
    * 开始拖拽
-   * @param e 
+   * @param e
    */
   startDrag(e: any, item: INodeTool) {
-    const node = this.igraphServices.addNode(item)
+    const node = this.igraphServices.addNode(item);
     this.addonDnd.start(node, e as any);
   }
   handleOk(e: any) {
     console.log(e);
     this.visible = false;
+  }
+  callback(key: string) {
+    console.log(key);
   }
   /**
    * 保存数据
@@ -187,10 +201,10 @@ export default class FlowDesignPanel extends Vue {
     this.flowgraphEntity.nodes = this.nodeArray;
     this.flowgraphEntity.edges = this.lineArray;
     this.workFlowDto.flowDesignJson = JSON.stringify(this.flowgraphEntity);
-    this.flowmanagerServices.create(this.workFlowDto)
+    this.flowmanagerServices.create(this.workFlowDto);
   }
   /***
-   * 
+   *
    */
   onRedo() {
     this.graph.history.redo();
