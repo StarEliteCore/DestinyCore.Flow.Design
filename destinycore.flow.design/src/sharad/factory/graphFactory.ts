@@ -15,7 +15,6 @@ export default class GraphConstruction {
       containerHtml !== null ? containerHtml.clientWidth : 1450;
     const height: number =
       containerHtml !== null ? containerHtml.clientHeight : 750;
-
     const minimap =
       _graph.miniMapContainer !== "undefined"
         ? this.getcontainerHtml(_graph.miniMapContainer!)
@@ -103,10 +102,10 @@ export default class GraphConstruction {
        */
       connecting: {
         dangling: false, // 边的起点或者终点只能是节点或者连接桩。
-        snap:true,//当 snap 设置为 true 时连线的过程中距离节点或者连接桩 50px 时会触发自动吸附
-        connectionPoint:"anchor",//指定连接点，默认值为 boundary。
-        anchor:"center",// 不允许连接到节点上(只能连接到连接桩上)
-        allowNode:false,//不允许连接到节点上(只能连接到连接桩上)
+        snap: true,//当 snap 设置为 true 时连线的过程中距离节点或者连接桩 50px 时会触发自动吸附
+        connectionPoint: "boundary",//指定连接点，默认值为 boundary。//anchor
+        anchor: "center",// 不允许连接到节点上(只能连接到连接桩上)
+        allowNode: false,//不允许连接到节点上(只能连接到连接桩上)
       },
     });
     graph.drawBackground({

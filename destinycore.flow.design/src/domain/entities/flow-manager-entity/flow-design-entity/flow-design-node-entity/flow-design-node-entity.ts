@@ -1,6 +1,6 @@
 import { IEntity } from "@/sharad/baseentity/IEntity";
-import { call } from "@antv/x6/lib/util/function/main";
-import { NodeTypeEnum } from './flow-design-node-enum';
+import { Guid } from "guid-typescript";
+import { NodeTypeEnum, ProcessingStrategyEnum, SignaturetypeEnum } from './flow-design-node-enum';
 import { IPorts } from './flow-design-portsbase-entity';
 
 /**
@@ -53,19 +53,40 @@ export interface INodeDataEntity {
   /**
    * 节点基础配置
    */
-  BasicConfiguration:Object;
+  BasicConfiguration: NodeBasicConfiguration;
   /**
    * 节点审批策略
    */
-  ApprovalStrategy:Object;
+  // ApprovalStrategy: Object;
   /**
    * 节点审批按钮
    */
-  NodeButton:string;
+  NodeButton: string;
   /**
    * 抄送策略
    */
-  CCStrategy:Object;
+  // CCStrategy: Object;
+}
+/**
+ * 节点基础配置
+ */
+export class NodeBasicConfiguration {
+  /**
+   * 节点标识
+   */
+  id: string = Guid.EMPTY;
+  /**
+   * 节点名称
+   */
+  name: string = "";
+  /**
+   * 节点处理策略
+   */
+  processingStrategy:ProcessingStrategyEnum=ProcessingStrategyEnum.oneagreed;
+  /**
+   * 审签类型
+   */
+  signaturetype:SignaturetypeEnum=SignaturetypeEnum.noApprovalComments
 }
 /**
  * 

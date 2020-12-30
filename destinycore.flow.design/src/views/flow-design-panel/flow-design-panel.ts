@@ -35,6 +35,7 @@ export default class FlowDesignPanel extends Vue {
   // private history!: Graph.HistoryManager;
   private canRedo: boolean = false;
   private canUndo: boolean = false;
+  private visible: boolean = false;
   /**
    * 反序列化出的流程设计器对象
    */
@@ -58,7 +59,6 @@ export default class FlowDesignPanel extends Vue {
      * 初始化画布
      */
     this.graph = this.igraphServices.CreateGraph(config);// GraphConstruction.createGraph();
-    // this.history = this.graph.history;
     this.graph.history.on("change", () => {
       this.canRedo = this.graph.history.canRedo();
       this.canUndo = this.graph.history.canUndo();
@@ -70,6 +70,13 @@ export default class FlowDesignPanel extends Vue {
       const validate: CheckGraphEdgeConnectedReturnEnum = this.igraphServices.checkEdgeConnected(edge);
       const actions = validateEdgeMessage.get(validate);
       typeof actions !== "undefined" && this.$Message.warning(actions);
+    });
+    /**
+     * 双击节点事件
+     */
+    this.graph.on("node:dblclick", ({ node }) => {
+      console.log("节点被双击了！！！！！！！！", node);
+      this.visible = true;
     });
     /**
      * 初始化画布节点或者线
@@ -106,6 +113,10 @@ export default class FlowDesignPanel extends Vue {
   startDrag(e: any, item: INodeTool) {
     const node = this.igraphServices.addNode(item)
     this.addonDnd.start(node, e as any);
+  }
+  handleOk(e: any) {
+    console.log(e);
+    this.visible = false;
   }
   /**
    * 保存数据
@@ -178,6 +189,9 @@ export default class FlowDesignPanel extends Vue {
     this.workFlowDto.flowDesignJson = JSON.stringify(this.flowgraphEntity);
     this.flowmanagerServices.create(this.workFlowDto)
   }
+  /***
+   * 
+   */
   onRedo() {
     this.graph.history.redo();
   }

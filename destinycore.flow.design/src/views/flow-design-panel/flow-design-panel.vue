@@ -1,16 +1,8 @@
 <template>
   <div id="flow-design-panel">
     <nav class="flow-design-panel-left">
-
       <a-button v-for="item in  buttonNodeTool " :key="item.type"  draggable="true" data-type="circle" @mousedown.native.prevent="$event=>startDrag($event,item)">{{item.label}}</a-button>
-      <!-- <div>
-        <a-button type="primary" draggable="true" data-type="circle" @mousedown.prevent="startDrag">开始节点</a-button>
-      </div>
-      <div>
-        <a-button type="primary" draggable="true" data-type="rect" @mousedown.prevent="startDrag">任务节点</a-button>
-      </div> -->
     </nav>
-    <!-- {{history}} -->
     <div class="flow-design-panel-graph">
       <a-row class="flow-design-panel-toolbar">
         <a-button type="primary" draggable="true" data-type="rect" :disabled="!canRedo" @click="onRedo">重做</a-button>
@@ -23,6 +15,11 @@
         </div>
       </div>
     </div>
+    <a-modal v-model="visible" title="Basic Modal" @ok="handleOk">
+      <p>Some contents...</p>
+      <p>Some contents...</p>
+      <p>Some contents...</p>
+    </a-modal>
   </div>
 </template>
 <script lang="ts" src="./flow-design-panel.ts"></script>

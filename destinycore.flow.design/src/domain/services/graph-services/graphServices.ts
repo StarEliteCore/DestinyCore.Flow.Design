@@ -7,6 +7,7 @@ import IGraphConfig from "@/sharad/factory/Igraph";
 import { Addon, Edge, FunctionExt, Graph, Node, Shape } from "@antv/x6";
 import { IGraphServices } from "./IgraphServices";
 import { INodeTool } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/node-button-config-entity";
+import { INodeDataEntity, NodeBasicConfiguration } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
 
 @injectable()
 export class GraphServices implements IGraphServices {
@@ -66,12 +67,6 @@ export class GraphServices implements IGraphServices {
             });
         });
         /**
-         * 双击节点事件
-         */
-        this.graph.on("node:dblclick", (nodecurren: any) => {
-            console.log("节点被双击了！！！！！！！！", nodecurren);
-        });
-        /**
          * 单击线事件
          */
         this.graph.on("edge:click", (edgecurren: any) => {
@@ -91,7 +86,7 @@ export class GraphServices implements IGraphServices {
                 SVGAElement
             >;
             this.showPorts(ports, true);
-        }),500);
+        }), 500);
         /**
          * 鼠标移动出节点隐藏连接桩
          */
@@ -100,7 +95,7 @@ export class GraphServices implements IGraphServices {
                 SVGAElement
             >;
             this.showPorts(ports, false);
-        }),500);
+        }), 500);
         return this.graph;
     }
     private showPorts(ports: NodeListOf<SVGAElement>, show: boolean) {
@@ -114,17 +109,18 @@ export class GraphServices implements IGraphServices {
      */
     validateNode(node: Node): boolean {
         console.log(this.graph.getNodes());
+        console.log(node)
         /**
          * 判断开始/结束节点是否存在
          */
         if (
-            node.data.nodeType === NodeTypeEnum.endNode ||
-            node.data.nodeType === NodeTypeEnum.startNode
+            node.data.NodeType === NodeTypeEnum.endNode ||
+            node.data.NodeType === NodeTypeEnum.startNode
         ) {
             const isexitsIndex = this.graph.getNodes().filter(
                 (_node: any) =>
-                    typeof _node.data.nodeType !== "undefined" &&
-                    _node.data.nodeType === node.data.nodeType
+                    typeof _node.data.NodeType !== "undefined" &&
+                    _node.data.NodeType === node.data.NodeType
             );
             if (isexitsIndex.length > 0) {
 
@@ -132,6 +128,7 @@ export class GraphServices implements IGraphServices {
                 return false
             }
         }
+        node.data.BasicConfiguration.id=node.id;
         return true
     }
     /***
@@ -201,13 +198,13 @@ export class GraphServices implements IGraphServices {
             /**
              * 判断是否是开始节点
              */
-            if ((targetNode && targetNode.data.nodeType === NodeTypeEnum.startNode)) {
+            if ((targetNode && targetNode.data.NodeType === NodeTypeEnum.startNode)) {
                 this.graph.removeEdge(edge.id);
                 return CheckGraphEdgeConnectedReturnEnum.nodeStart
             }/**
              * 判断结束节点
              */
-            if ((sourceNode && sourceNode.data.nodeType === NodeTypeEnum.endNode)) {
+            if ((sourceNode && sourceNode.data.NodeType === NodeTypeEnum.endNode)) {
                 this.graph.removeEdge(edge.id);
                 return CheckGraphEdgeConnectedReturnEnum.nodeSourceEnd
             }
@@ -237,6 +234,11 @@ export class GraphServices implements IGraphServices {
      */
     addNode(_node: INodeTool): Node | undefined {
         let node: Node | undefined;
+        const nodedata: INodeDataEntity = {
+            NodeType: _node.type,
+            BasicConfiguration: new NodeBasicConfiguration(),
+            NodeButton: "",
+        }
         const nodeImage = require("@/assets/icons/" + NodeTypeEnum[_node.type] + ".png");
         const baseData = {
             attrs: {
@@ -247,9 +249,7 @@ export class GraphServices implements IGraphServices {
                     "xlink:Href": nodeImage
                 }
             },
-            data: {
-                nodeType: _node.type
-            }
+            data: nodedata
         };
         switch (_node.shape) {
             case ENodeShape[ENodeShape.rect]:
