@@ -11,8 +11,8 @@ import {
 } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
 
 import { CheckGraphEdgeConnectedReturnEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/check-flow-return-enum/checkGraph-return-enum";
-import GraphConstruction from "@/sharad/factory/graphFactory";
-import IGraphConfig from "@/sharad/factory/Igraph";
+import GraphConstruction from "@/shared/factory/graphFactory";
+import IGraphConfig from "@/shared/factory/Igraph";
 import { IGraphServices } from "./IgraphServices";
 import { INodeTool } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/node-button-config-entity";
 import { injectable } from "inversify";

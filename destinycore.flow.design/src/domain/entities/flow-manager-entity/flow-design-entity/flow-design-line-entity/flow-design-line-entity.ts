@@ -1,4 +1,4 @@
-import { IEntity } from "@/sharad/baseentity/IEntity";
+import { IEntity } from "@/shared/baseentity/IEntity";
 /**
  * 线保存的实体
  */

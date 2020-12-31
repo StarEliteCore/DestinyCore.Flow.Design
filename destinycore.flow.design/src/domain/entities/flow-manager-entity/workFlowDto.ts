@@ -1,4 +1,4 @@
-import { IEntity } from "@/sharad/baseentity/IEntity";
+import { IEntity } from "@/shared/baseentity/IEntity";
 import { Guid } from "guid-typescript";
 /**
  * 流程管理

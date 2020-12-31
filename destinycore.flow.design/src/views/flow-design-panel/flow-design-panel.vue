@@ -18,15 +18,13 @@
           data-type="rect"
           :disabled="!canRedo"
           @click="onRedo"
-          >重做</a-button
-        >
+          >重做</a-button>
         <a-button
           type="primary"
           draggable="true"
           data-type="rect"
           :disabled="!canUndo"
-          @click="onUndo"
-          >撤销</a-button
+          @click="onUndo">撤销</a-button
         >
         <a-button type="primary" draggable="true" data-type="rect" @click="Save">保存</a-button>
       </a-row>
@@ -35,20 +33,7 @@
         <div id="container"></div>
       </div>
     </div>
-    <a-modal v-model="visible" title="流程步骤属性" @ok="handleOk">
-      <a-tabs default-active-key="1" @change="callback">
-        <a-tab-pane key="1" tab="基础配置">
-          <p>节点标识：{{ BasicConfiguration.id }}</p>
-          <p>节点名称：{{ BasicConfiguration.name }}</p>
-          <p>节点处理策略：{{ BasicConfiguration.processingStrategy }}</p>
-          <p>节点处理策略：{{ BasicConfiguration.signatureType }}</p>
-        </a-tab-pane>
-        <a-tab-pane key="2" tab="Tab 2" force-render>
-          Content of Tab Pane 2
-        </a-tab-pane>
-        <a-tab-pane key="3" tab="Tab 3"> Content of Tab Pane 3 </a-tab-pane>
-      </a-tabs>
-    </a-modal>
+    <node-operate ref="NodeOperateInfo"></node-operate>
   </div>
 </template>
 <script lang="ts" src="./flow-design-panel.ts"></script>

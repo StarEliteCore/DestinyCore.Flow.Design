@@ -1,4 +1,4 @@
-import { IEntity } from '@/sharad/baseentity/IEntity';
+import { IEntity } from '@/shared/baseentity/IEntity';
 export interface IPorts  {
     /**
      * 连接装群组

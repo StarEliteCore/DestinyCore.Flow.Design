@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { ITestService } from "./ITestServiecs";
 import "reflect-metadata"
-import { IocTypes } from "@/sharad/destinycoreIoc/iocSymbolTypes";
+import { IocTypes } from "@/shared/destinycoreIoc/iocSymbolTypes";
 
 @injectable()
 export default class TestService  {

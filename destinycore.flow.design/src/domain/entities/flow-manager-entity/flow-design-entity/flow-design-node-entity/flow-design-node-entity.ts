@@ -5,7 +5,7 @@ import {
 } from "./flow-design-node-enum";
 
 import { Guid } from "guid-typescript";
-import { IEntity } from "@/sharad/baseentity/IEntity";
+import { IEntity } from "@/shared/baseentity/IEntity";
 import { IPorts } from "./flow-design-portsbase-entity";
 
 /**
