@@ -24,13 +24,14 @@ import { IGraphServices } from "@/domain/services/graph-services/IgraphServices"
 import { INodeTool } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/node-button-config-entity";
 import { IocTypes } from "@/shared/destinycoreIoc/iocSymbolTypes";
 import { Node } from "@antv/x6/lib/model/node";
+import NodeOperate from "./flow-node-operate/flow-node-operate.vue";
+import NodeOperateInfo from "./flow-node-operate/flow-node-operate"
 import { NodeTypeEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-enum";
+import { Ref } from "vue-property-decorator";
 import Vue from "vue";
 import { WorkFlowDto } from "@/domain/entities/flow-manager-entity/workFlowDto";
 import { validateEdgeMessage } from "@/domain/entities/flow-manager-entity/flow-design-entity/check-flow-return-enum/validateEdgeMessage";
-import NodeOperate from "./flow-node-operate/flow-node-operate.vue";
-import NodeOperateInfo from "./flow-node-operate/flow-node-operate"
-import { Ref } from "vue-property-decorator";
+
 @Component({
   name: "FlowPnel",
   components: {
@@ -95,7 +96,7 @@ export default class FlowDesignPanel extends Vue {
      */
     this.graph.on("node:dblclick", ({ node }) => {
       console.log(node)
-      if ((node.data as INodeDataEntity).NodeType !== NodeTypeEnum.workNode) {
+      if ((node.data as INodeDataEntity).nodeType !== NodeTypeEnum.workNode) {
         console.log(node.data.NodeType)
         this.$message.warning(typeof node.data.NodeType !== "undefined" &&
           node.data.NodeType === NodeTypeEnum.startNode ? "开始节点不允许配置属性!" : "结束节点不允许配置属性!",

@@ -33,7 +33,7 @@
         <div id="container"></div>
       </div>
     </div>
-    <node-operate ref="NodeOperateInfo"></node-operate>
+    <node-operate  ref="NodeOperateInfo"></node-operate>
   </div>
 </template>
 <script lang="ts" src="./flow-design-panel.ts"></script>

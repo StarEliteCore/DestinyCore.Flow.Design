@@ -1,4 +1,6 @@
 import {
+  ApprovalStrategyDefaultEnum,
+  CirculationTypeEnum,
   NodeTypeEnum,
   ProcessingStrategyEnum,
   SignaturetypeEnum,
@@ -54,15 +56,15 @@ export interface INodeDataEntity {
   /**
    * 节点类型
    */
-  NodeType: NodeTypeEnum;
+  nodeType: NodeTypeEnum;
   /**
    * 节点基础配置
    */
-  BasicConfiguration: NodeBasicConfiguration;
+  basicConfiguration: NodeBasicConfiguration;
   /**
    * 节点审批策略
    */
-  // ApprovalStrategy: Object;
+  approvalStrategy: ApprovalStrategy;
   /**
    * 节点审批按钮
    */
@@ -94,10 +96,32 @@ export class NodeBasicConfiguration {
   signatureType: SignaturetypeEnum = SignaturetypeEnum.noApprovalComments;
 }
 /**
- *
+ *节点审批策略对象
  */
-export class ApprovalStrategy {}
+export class ApprovalStrategy {
+  /**
+   * 流转类型
+   */
+  circulationType: CirculationTypeEnum = CirculationTypeEnum.singleStep;
+  /**
+   * 默认处理者对象
+   */
+  approvalStrategyDefault: ApprovalStrategyDefault = new ApprovalStrategyDefault();
+}
+/**
+ * 默认处理对象
+ */
+export class ApprovalStrategyDefault {
+  /**
+   * 默认处理者类型
+   */
+  approvalStrategyDefaultType: ApprovalStrategyDefaultEnum =ApprovalStrategyDefaultEnum.none;
+  /**
+   * 默认处理者Id
+   */
+  Ids: Array<string> = new Array<string>();
+}
 /**
  * 节点抄送对象
  */
-export class CCStrategy {}
+// export class CCStrategy {}

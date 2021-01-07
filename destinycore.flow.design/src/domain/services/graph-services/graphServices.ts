@@ -2,13 +2,14 @@ import "reflect-metadata";
 
 import { Addon, Edge, FunctionExt, Graph, Node, Shape } from "@antv/x6";
 import {
-  ENodeShape,
-  NodeTypeEnum,
-} from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-enum";
-import {
+  ApprovalStrategy,
   INodeDataEntity,
   NodeBasicConfiguration,
 } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
+import {
+  ENodeShape,
+  NodeTypeEnum,
+} from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-enum";
 
 import { CheckGraphEdgeConnectedReturnEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/check-flow-return-enum/checkGraph-return-enum";
 import GraphConstruction from "@/shared/factory/graphFactory";
@@ -144,9 +145,9 @@ export class GraphServices implements IGraphServices {
         return false;
       }
     }
-    (node.data as INodeDataEntity).BasicConfiguration.id = node.id;
+    (node.data as INodeDataEntity).basicConfiguration.id = node.id;
     if (node.attrs?.label.text != null) {
-      (node.data as INodeDataEntity).BasicConfiguration.name = node.attrs.label.text?.toString();
+      (node.data as INodeDataEntity).basicConfiguration.name = node.attrs.label.text?.toString();
     }
     // (node.data as INodeDataEntity).BasicConfiguration.id=node.id;
     return true;
@@ -266,9 +267,10 @@ export class GraphServices implements IGraphServices {
   addNode(_node: INodeTool): Node | undefined {
     let node: Node | undefined;
     const nodedata: INodeDataEntity = {
-      NodeType: _node.type,
-      BasicConfiguration: new NodeBasicConfiguration(),
+      nodeType: _node.type,
+      basicConfiguration: new NodeBasicConfiguration(),
       NodeButton: "",
+      approvalStrategy: new ApprovalStrategy(),
     };
     const nodeImage = require("@/assets/icons/" +
       NodeTypeEnum[_node.type] +

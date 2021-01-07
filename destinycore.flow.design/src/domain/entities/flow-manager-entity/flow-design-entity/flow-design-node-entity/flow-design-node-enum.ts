@@ -56,6 +56,41 @@ export enum SignaturetypeEnum {
    */
   withApprovalCommentsSignatureRequired = 10,
 }
+/**
+ * 流转类型枚举
+ */
+export enum CirculationTypeEnum{
+  /**
+   * 单一步骤
+   */
+  singleStep=0,
+  /**
+   * 根据条件判断无后续步骤提示
+   */
+  OperateAccordingToConditionsNoStepTips=5,
+}
+/**
+ * 默认处理类型
+ */
+export enum ApprovalStrategyDefaultEnum{
+  /**
+   * 无
+   */
+  none,
+  /**
+   * 角色组
+   */
+  roleGroup=5,
+  /**
+   * 组织架构
+   */
+  organization=10,
+  /**
+   * 职位
+   */
+  position=15,
+}
+
 
 
 
