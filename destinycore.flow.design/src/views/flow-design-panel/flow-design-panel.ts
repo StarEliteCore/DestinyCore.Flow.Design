@@ -31,6 +31,7 @@ import { Ref } from "vue-property-decorator";
 import Vue from "vue";
 import { WorkFlowDto } from "@/domain/entities/flow-manager-entity/workFlowDto";
 import { validateEdgeMessage } from "@/domain/entities/flow-manager-entity/flow-design-entity/check-flow-return-enum/validateEdgeMessage";
+import { Guid } from "guid-typescript";
 
 @Component({
   name: "FlowPnel",
@@ -97,9 +98,9 @@ export default class FlowDesignPanel extends Vue {
     this.graph.on("node:dblclick", ({ node }) => {
       console.log(node)
       if ((node.data as INodeDataEntity).nodeType !== NodeTypeEnum.workNode) {
-        console.log(node.data.NodeType)
-        this.$message.warning(typeof node.data.NodeType !== "undefined" &&
-          node.data.NodeType === NodeTypeEnum.startNode ? "开始节点不允许配置属性!" : "结束节点不允许配置属性!",
+        console.log(node.data.nodeType)
+        this.$message.warning(typeof node.data.nodeType !== "undefined" &&
+          node.data.nodeType === NodeTypeEnum.startNode ? "开始节点不允许配置属性!" : "结束节点不允许配置属性!",
           3);
         return;
       }
@@ -149,46 +150,32 @@ export default class FlowDesignPanel extends Vue {
      * 循环清洗节点数据
      */
     this.graph.getNodes().forEach((_item: any) => {
-      /**
-       * 创建链接桩数组
-       */
-      const itemarr: Array<IGroupsRelation> = [];
-      /**
-       * 循环链接桩数组
-       */
-      _item.ports.items.forEach((element: any) => {
+      console.log(_item)
+      if (typeof _item && typeof _item !== "undefined") {
         /**
-         * 将画布中节点内的链接桩对象清洗出来
-         */
-        const item: IGroupsRelation = {
-          id: element.id,
-          group: element.group,
+        * 创建链接桩对象
+        */
+        const portmodel: IPorts = {
+          items: _item.ports.items,
         };
-        itemarr.push(item);
-      });
-      /**
-       * 创建链接桩对象
-       */
-      const portmodel: IPorts = {
-        items: itemarr,
-      };
-      /**
-       * 定义一个节点对象
-       */
-      const node: INodeEntity = {
-        id: _item.id,
-        children: [],
-        data: _item.data,
-        label: _item.label,
-        parent: "",
-        shape: _item.shape,
-        visible: _item.visible,
-        x: _item.store.data.position.x,
-        y: _item.store.data.position.y,
-        ports: portmodel,
-      };
-      // console.log(node);
-      this.nodeArray.push(node);
+        /**
+         * 定义一个节点对象
+         */
+        const node: INodeEntity = {
+          id: _item.id,
+          children: [],
+          data: _item.data,
+          label: _item.attrs.label.text,
+          parent: Guid.EMPTY,
+          shape: _item.shape,
+          visible: _item.visible,
+          x: _item.store.data.position.x,
+          y: _item.store.data.position.y,
+          ports: portmodel,
+        };
+        // console.log(node);
+        this.nodeArray.push(node);
+      }
     });
     this.graph.getEdges().forEach((_edge: any) => {
       const source: ICellPortEntity = {
@@ -209,6 +196,7 @@ export default class FlowDesignPanel extends Vue {
     });
     this.flowgraphEntity.nodes = this.nodeArray;
     this.flowgraphEntity.edges = this.lineArray;
+    console.log( this.nodeArray, this.lineArray)
     this.workFlowDto.flowDesignJson = JSON.stringify(this.flowgraphEntity);
     this.flowmanagerServices.create(this.workFlowDto);
   }

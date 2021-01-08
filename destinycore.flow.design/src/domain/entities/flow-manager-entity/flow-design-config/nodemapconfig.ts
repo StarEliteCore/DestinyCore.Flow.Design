@@ -16,7 +16,7 @@ const rectAddconfig = new Shape.Rect({
         ],
     },
     data: {
-        NodeType: NodeTypeEnum.workNode,
+        nodeType: NodeTypeEnum.workNode,
     },
 })
 ///开始节点默认配置
@@ -32,7 +32,7 @@ const circleAddconfig = new Shape.Rect({
         ],
     },
     data: {
-        NodeType: NodeTypeEnum.startNode,
+        nodeType: NodeTypeEnum.startNode,
     },
 })
 /**

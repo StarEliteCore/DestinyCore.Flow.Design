@@ -5,8 +5,6 @@ import {
   ProcessingStrategyEnum,
   SignaturetypeEnum,
 } from "./flow-design-node-enum";
-
-import { Guid } from "guid-typescript";
 import { IEntity } from "@/shared/baseentity/IEntity";
 import { IPorts } from "./flow-design-portsbase-entity";
 
@@ -79,14 +77,6 @@ export interface INodeDataEntity {
  */
 export class NodeBasicConfiguration {
   /**
-   * 节点标识
-   */
-  id: string = Guid.EMPTY;
-  /**
-   * 节点名称
-   */
-  name: string = "";
-  /**
    * 节点处理策略
    */
   processingStrategy: ProcessingStrategyEnum = ProcessingStrategyEnum.oneAgreed;
@@ -94,19 +84,6 @@ export class NodeBasicConfiguration {
    * 审签类型
    */
   signatureType: SignaturetypeEnum = SignaturetypeEnum.noApprovalComments;
-}
-/**
- *节点审批策略对象
- */
-export class ApprovalStrategy {
-  /**
-   * 流转类型
-   */
-  circulationType: CirculationTypeEnum = CirculationTypeEnum.singleStep;
-  /**
-   * 默认处理者对象
-   */
-  approvalStrategyDefault: ApprovalStrategyDefault = new ApprovalStrategyDefault();
 }
 /**
  * 默认处理对象
@@ -119,7 +96,21 @@ export class ApprovalStrategyDefault {
   /**
    * 默认处理者Id
    */
-  Ids: Array<string> = new Array<string>();
+  ids: Array<string> = new Array<string>();
+}
+
+/**
+ *节点审批策略对象
+ */
+export class ApprovalStrategy {
+  /**
+   * 流转类型
+   */
+  circulationType: CirculationTypeEnum = CirculationTypeEnum.singleStep;
+  /**
+   * 默认处理者对象
+   */
+  approvalStrategyDefault: ApprovalStrategyDefault = new ApprovalStrategyDefault();
 }
 /**
  * 节点抄送对象

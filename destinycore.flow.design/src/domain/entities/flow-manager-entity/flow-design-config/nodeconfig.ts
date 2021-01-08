@@ -57,10 +57,10 @@ const nodePortsConfig = {
             },
         },
         items: [
-            { id: Guid.create(), group: "left" },
-            { id: Guid.create(), group: "top" },
-            { id: Guid.create(), group: "right" },
-            { id: Guid.create(), group: "bottom" },
+            { id: Guid.create().toString(), group: "left" },
+            { id: Guid.create().toString(), group: "top" },
+            { id: Guid.create().toString(), group: "right" },
+            { id: Guid.create().toString(), group: "bottom" },
         ],
     },
 }

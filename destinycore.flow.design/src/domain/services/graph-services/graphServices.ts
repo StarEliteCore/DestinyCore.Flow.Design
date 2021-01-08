@@ -24,8 +24,8 @@ export class GraphServices implements IGraphServices {
     console.log(_graph);
     const validateNode = (node: Node) => {
       if (
-        node.data.NodeType === NodeTypeEnum.endNode ||
-        node.data.NodeType === NodeTypeEnum.startNode
+        node.data.nodeType === NodeTypeEnum.endNode ||
+        node.data.nodeType === NodeTypeEnum.startNode
       ) {
         debugger;
         console.log(this.graph);
@@ -33,13 +33,13 @@ export class GraphServices implements IGraphServices {
           .getNodes()
           .filter(
             (_node: any) =>
-              typeof _node.data.NodeType !== "undefined" &&
-              _node.data.NodeType === node.data.NodeType
+              typeof _node.data.nodeType !== "undefined" &&
+              _node.data.nodeType === node.data.nodeType
           );
         if (isexitsIndex.length > 0) {
           // this.$message.warning(
-          //   typeof node.data.NodeType !== "undefined" &&
-          //     node.data.NodeType === NodeTypeEnum.startNode
+          //   typeof node.data.nodeType !== "undefined" &&
+          //     node.data.nodeType === NodeTypeEnum.startNode
           //     ? "流程只允许有一个开始节点!"
           //     : "流程只允许有一个结束节点!",
           //   3
@@ -130,25 +130,25 @@ export class GraphServices implements IGraphServices {
      * 判断开始/结束节点是否存在
      */
     if (
-      node.data.NodeType === NodeTypeEnum.endNode ||
-      node.data.NodeType === NodeTypeEnum.startNode
+      node.data.nodeType === NodeTypeEnum.endNode ||
+      node.data.nodeType === NodeTypeEnum.startNode
     ) {
       const isexitsIndex = this.graph
         .getNodes()
         .filter(
           (_node: any) =>
-            typeof _node.data.NodeType !== "undefined" &&
-            _node.data.NodeType === node.data.NodeType
+            typeof _node.data.nodeType !== "undefined" &&
+            _node.data.nodeType === node.data.nodeType
         );
       if (isexitsIndex.length > 0) {
         this.graph.removeNode(node.id);
         return false;
       }
     }
-    (node.data as INodeDataEntity).basicConfiguration.id = node.id;
-    if (node.attrs?.label.text != null) {
-      (node.data as INodeDataEntity).basicConfiguration.name = node.attrs.label.text?.toString();
-    }
+    // (node.data as INodeDataEntity).basicConfiguration.id = node.id;
+    // if (node.attrs?.label.text != null) {
+    //   (node.data as INodeDataEntity).basicConfiguration.name = node.attrs.label.text?.toString();
+    // }
     // (node.data as INodeDataEntity).BasicConfiguration.id=node.id;
     return true;
   }
@@ -219,14 +219,14 @@ export class GraphServices implements IGraphServices {
       /**
        * 判断是否是开始节点
        */
-      if (targetNode && targetNode.data.NodeType === NodeTypeEnum.startNode) {
+      if (targetNode && targetNode.data.nodeType === NodeTypeEnum.startNode) {
         this.graph.removeEdge(edge.id);
         return CheckGraphEdgeConnectedReturnEnum.nodeStart;
       }
       /**
        * 判断结束节点
        */
-      if (sourceNode && sourceNode.data.NodeType === NodeTypeEnum.endNode) {
+      if (sourceNode && sourceNode.data.nodeType === NodeTypeEnum.endNode) {
         this.graph.removeEdge(edge.id);
         return CheckGraphEdgeConnectedReturnEnum.nodeSourceEnd;
       }
