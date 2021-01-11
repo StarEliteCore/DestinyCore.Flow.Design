@@ -9,7 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@antv/x6": "^1.7.7",
+    "@antv/x6": "^1.11.0",
     "@types/js-cookie": "^2.2.6",
     "@vue-ioc/core": "^0.2.3",
     "ant-design-vue": "^1.7.2",

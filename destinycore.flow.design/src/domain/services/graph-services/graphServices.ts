@@ -1,11 +1,7 @@
 import "reflect-metadata";
 
 import { Addon, Edge, FunctionExt, Graph, Node, Shape } from "@antv/x6";
-import {
-  ApprovalStrategy,
-  INodeDataEntity,
-  NodeBasicConfiguration,
-} from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
+import { ApprovalStrategy, INodeDataEntity, NodeBasicConfiguration } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
 import {
   ENodeShape,
   NodeTypeEnum,
@@ -21,14 +17,14 @@ import { injectable } from "inversify";
 @injectable()
 export class GraphServices implements IGraphServices {
   CreateAddon(_graph: Graph): void {
-    console.log(_graph);
+    // console.log(_graph);
     const validateNode = (node: Node) => {
       if (
         node.data.nodeType === NodeTypeEnum.endNode ||
         node.data.nodeType === NodeTypeEnum.startNode
       ) {
         debugger;
-        console.log(this.graph);
+        // console.log(this.graph);
         const isexitsIndex = this.graph
           .getNodes()
           .filter(
@@ -67,10 +63,10 @@ export class GraphServices implements IGraphServices {
     /**
      * 单击节点事件
      */
-    this.graph.on("node:click", (nodecurren: any) => {
-      console.log("节点被单击了！！！！！！！asd a ！", nodecurren);
+    this.graph.on("node:click", ({node}) => {
+      // console.log("节点被单击了！！！！！！！asd a ！", nodecurren);
       this.reset();
-      nodecurren.node.attr("body", {
+      node.attr("body", {
         stroke: "#41d0ce",
         strokeWidth: 2,
         fill: "#89e8de",
@@ -79,11 +75,12 @@ export class GraphServices implements IGraphServices {
     /**
      * 单击线事件
      */
-    this.graph.on("edge:click", (edgecurren: any) => {
-      console.log("单击了线！！！！！！！！", edgecurren);
+    this.graph.on("edge:click", ({edge}) => {
+      console.log("单击了线！！！！！！！！", edge);
       this.reset();
-      edgecurren.edge.zIndex = 1000;
-      edgecurren.edge.attr("line/stroke", "#41d0ce");
+      edge.zIndex = 1000;
+      edge.attr("line/stroke", "#41d0ce");
+      console.log()
     });
     this.graph!.on("blank:click", () => {
       this.reset();
@@ -145,11 +142,6 @@ export class GraphServices implements IGraphServices {
         return false;
       }
     }
-    // (node.data as INodeDataEntity).basicConfiguration.id = node.id;
-    // if (node.attrs?.label.text != null) {
-    //   (node.data as INodeDataEntity).basicConfiguration.name = node.attrs.label.text?.toString();
-    // }
-    // (node.data as INodeDataEntity).BasicConfiguration.id=node.id;
     return true;
   }
   /***
@@ -266,11 +258,11 @@ export class GraphServices implements IGraphServices {
    */
   addNode(_node: INodeTool): Node | undefined {
     let node: Node | undefined;
-    const nodedata: INodeDataEntity = {
+    const nodedata: INodeDataEntity ={
       nodeType: _node.type,
-      basicConfiguration: new NodeBasicConfiguration(),
-      NodeButton: "",
-      approvalStrategy: new ApprovalStrategy(),
+      basicConfiguration:new NodeBasicConfiguration(),
+      approvalStrategy:new ApprovalStrategy(),
+      NodeButton:"",
     };
     const nodeImage = require("@/assets/icons/" +
       NodeTypeEnum[_node.type] +

@@ -1,31 +1,24 @@
-import { ApprovalStrategy, INodeDataEntity, NodeBasicConfiguration } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
 import { Component, Mixins } from "vue-property-decorator";
 
 import FlowOperateMixins from "@/shared/mixins/flow.operate.mixins";
-import { NodeTypeEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-enum";
+import { NodeEntity } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
 
 @Component({
-    name: "FlowNodeLineOperate",
+  name: "FlowNodeLineOperate",
 })
 export default class FlowNodeLineOperate extends Mixins(FlowOperateMixins) {
-    ///
-    private nodeData: INodeDataEntity = {
-        nodeType: NodeTypeEnum.workNode,
-        basicConfiguration: new NodeBasicConfiguration(),
-        NodeButton: "",
-        approvalStrategy:new ApprovalStrategy(),
-    };
-    Show(_nodeData: INodeDataEntity) {
-        this.nodeData = _nodeData;
-        this.IsShow = true;
-    }
-    handleOk(e: any) {
-        console.log(e);
-        this.IsShow = false;
-        console.log(this.nodeData)
-        // this.visible = false;
-    }
-    callback(key: string) {
-        // this.IsShow = false;
-    }
+  private node: NodeEntity=new NodeEntity();
+  private labelCol: Object = { span: 4 };
+  private wrapperCol: Object = { span: 14 };
+  Show(_node: NodeEntity) {
+    this.node = _node;
+    this.IsShow = true;
+  }
+  handleOk(e: any) {
+    console.log(e);
+    this.IsShow = false;
+  }
+  callback(key: string) {
+    // this.IsShow = false;
+  }
 }

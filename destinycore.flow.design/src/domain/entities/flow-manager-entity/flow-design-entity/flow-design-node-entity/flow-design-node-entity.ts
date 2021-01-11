@@ -5,49 +5,52 @@ import {
   ProcessingStrategyEnum,
   SignaturetypeEnum,
 } from "./flow-design-node-enum";
+
+import { Guid } from "guid-typescript";
 import { IEntity } from "@/shared/baseentity/IEntity";
-import { IPorts } from "./flow-design-portsbase-entity";
+import { Ports } from "./flow-design-portsbase-entity";
 
 /**
  * 节点和边的基类
  */
-export interface INodeEntity extends IEntity<string> {
+export class NodeEntity implements IEntity<string> {
+  id: string = Guid.EMPTY;
   /**
    * 子节点/边。
    */
-  children: Array<string>;
+  children: Array<string> = [];
   /**
    * 节点/边关联的业务数据。
    */
-  data: INodeDataEntity;
+  data: INodeDataEntity = new NodeDataEntity();
   /**
    * 名称
    */
-  label: string;
+  label: string = "";
   /**
    * 父节点。
    */
-  parent: string;
+  parent: string = "";
   /**
    * 渲染节点/边的图形。
    */
-  shape: string;
+  shape: string = "";
   /**
    * 节点/边是否可见。
    */
-  visible: boolean;
+  visible: boolean = true;
   /**
    * 横向坐标
    */
-  x: number;
+  x: number = 10;
   /**
    * 纵向坐标
    */
-  y: number;
+  y: number = 10;
   /**
    * 链接桩数组
    */
-  ports: IPorts;
+  ports: Ports = new Ports();
 }
 
 export interface INodeDataEntity {
@@ -72,6 +75,29 @@ export interface INodeDataEntity {
    */
   // CCStrategy: Object;
 }
+export class NodeDataEntity implements INodeDataEntity {
+  /**
+   * 节点类型
+   */
+  nodeType: NodeTypeEnum = NodeTypeEnum.workNode;
+  /**
+   * 节点基础配置
+   */
+  basicConfiguration: NodeBasicConfiguration = new NodeBasicConfiguration();
+  /**
+   * 节点审批策略
+   */
+  approvalStrategy: ApprovalStrategy = new ApprovalStrategy();
+  /**
+   * 节点审批按钮
+   */
+  NodeButton: string = "";
+  /**
+   * 抄送策略
+   */
+  // CCStrategy: Object;
+}
+
 /**
  * 节点基础配置
  */
@@ -92,7 +118,8 @@ export class ApprovalStrategyDefault {
   /**
    * 默认处理者类型
    */
-  approvalStrategyDefaultType: ApprovalStrategyDefaultEnum =ApprovalStrategyDefaultEnum.none;
+  approvalStrategyDefaultType: ApprovalStrategyDefaultEnum =
+    ApprovalStrategyDefaultEnum.none;
   /**
    * 默认处理者Id
    */

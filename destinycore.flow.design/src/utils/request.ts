@@ -4,13 +4,14 @@
 
 // import ApplicationUserManager from "@/shared/config/IdentityServerLogin";
 // import NoticeUtils from "@/shared/Noticemessage/NoticeUtils";
+
 import axios from "axios";
 
 const service = axios.create({
   baseURL: "http://localhost:8009/", // url = base url + request url
 });
 service.interceptors.request.use(
-  (config) => {
+  (config: any) => {
     // Add Authorization header to every request, you can add other custom headers here
     // const token = GetToken();
     // if (token) {
@@ -18,17 +19,17 @@ service.interceptors.request.use(
     // }
     return config;
   },
-  (error) => {
+  (error: any) => {
     return Promise.reject(error);
   }
 );
 service.interceptors.response.use(
-  (response) => {
+  (response: any) => {
     if (response.status == 200) {
       return response.data;
     }
   },
-  (error) => {
+  (error: any) => {
     // const response = error.response;
     // switch (response.status) {
     //   case 500:

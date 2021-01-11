@@ -1,48 +1,44 @@
 import * as NodeTool from "@/domain/entities/flow-manager-entity/flow-design-config/node-button-config";
 
-import { Addon, Graph } from "@antv/x6";
+import { Addon, Edge, Graph } from "@antv/x6";
 import {
-  ICellPortEntity,
-  ILineEntity,
+  CellPortEntity,
+  LineEntity,
 } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-line-entity/flow-design-line-entity";
 import {
-  IGroupsRelation,
-  IPorts,
-} from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-portsbase-entity";
-import {
-  INodeDataEntity,
-  INodeEntity,
+  NodeDataEntity,
+  NodeEntity,
 } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-entity";
 
 import { CheckGraphEdgeConnectedReturnEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/check-flow-return-enum/checkGraph-return-enum";
 import Component from "vue-class-component";
 import DecoratorProvider from "@/shared/destinycoreIoc/decoratorProvider";
+import { FlowgraphEntity } from "@/domain/entities/flow-manager-entity/flow-design-entity/flowgraphEntity";
+import { Guid } from "guid-typescript";
 import { IFlowManagerServices } from "@/domain/services/flow-manager-services/IFlowManagerServices";
-import { IFlowgraphEntity } from "@/domain/entities/flow-manager-entity/flow-design-entity/flowgraphEntity";
 import IGraphConfig from "@/shared/factory/Igraph";
 import { IGraphServices } from "@/domain/services/graph-services/IgraphServices";
 import { INodeTool } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/node-button-config-entity";
 import { IocTypes } from "@/shared/destinycoreIoc/iocSymbolTypes";
 import { Node } from "@antv/x6/lib/model/node";
 import NodeOperate from "./flow-node-operate/flow-node-operate.vue";
-import NodeOperateInfo from "./flow-node-operate/flow-node-operate"
+import NodeOperateInfo from "./flow-node-operate/flow-node-operate";
 import { NodeTypeEnum } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-node-enum";
+import { Ports } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/flow-design-portsbase-entity";
 import { Ref } from "vue-property-decorator";
 import Vue from "vue";
 import { WorkFlowDto } from "@/domain/entities/flow-manager-entity/workFlowDto";
 import { validateEdgeMessage } from "@/domain/entities/flow-manager-entity/flow-design-entity/check-flow-return-enum/validateEdgeMessage";
-import { Guid } from "guid-typescript";
 
 @Component({
   name: "FlowPnel",
   components: {
     NodeOperate,
   },
-}
-)
+})
 export default class FlowDesignPanel extends Vue {
-  private nodeArray: Array<INodeEntity> = [];
-  private lineArray: Array<ILineEntity> = [];
+  private nodeArray: Array<NodeEntity> = [];
+  private lineArray: Array<LineEntity> = [];
   private workFlowDto: WorkFlowDto = new WorkFlowDto();
   private graph!: Graph;
   private addonDnd: any;
@@ -58,10 +54,7 @@ export default class FlowDesignPanel extends Vue {
   /**
    * 反序列化出的流程设计器对象
    */
-  private flowgraphEntity: IFlowgraphEntity = {
-    edges: [],
-    nodes: [],
-  };
+  private flowgraphEntity: FlowgraphEntity = new FlowgraphEntity();
 
   @DecoratorProvider(IocTypes.GraphServices)
   private igraphServices!: IGraphServices;
@@ -96,15 +89,26 @@ export default class FlowDesignPanel extends Vue {
      * 双击节点事件
      */
     this.graph.on("node:dblclick", ({ node }) => {
-      console.log(node)
-      if ((node.data as INodeDataEntity).nodeType !== NodeTypeEnum.workNode) {
-        console.log(node.data.nodeType)
-        this.$message.warning(typeof node.data.nodeType !== "undefined" &&
-          node.data.nodeType === NodeTypeEnum.startNode ? "开始节点不允许配置属性!" : "结束节点不允许配置属性!",
-          3);
+      if ((node.data as NodeDataEntity).nodeType !== NodeTypeEnum.workNode) {
+        this.$message.warning(
+          typeof node.data.nodeType !== "undefined" &&
+            node.data.nodeType === NodeTypeEnum.startNode
+            ? "开始节点不允许配置属性!"
+            : "结束节点不允许配置属性!",
+          3
+        );
         return;
       }
-      this.nodeOperateInfo.Show((node.data as INodeDataEntity))
+      this.nodeOperateInfo.Show(this.getNodeEntity(node));
+    });
+    /**
+     * 双击节点事件
+     */
+    this.graph.on("edge:dblclick", ({edge}) => {
+      console.log(edge);
+      debugger;
+      this.getLineEntity(edge);
+      // this.nodeOperateInfo.Show(this.getNodeEntity(node));
     });
     /**
      * 初始化画布节点或者线
@@ -149,54 +153,29 @@ export default class FlowDesignPanel extends Vue {
     /**
      * 循环清洗节点数据
      */
-    this.graph.getNodes().forEach((_item: any) => {
-      console.log(_item)
-      if (typeof _item && typeof _item !== "undefined") {
-        /**
-        * 创建链接桩对象
-        */
-        const portmodel: IPorts = {
-          items: _item.ports.items,
-        };
-        /**
-         * 定义一个节点对象
-         */
-        const node: INodeEntity = {
-          id: _item.id,
-          children: [],
-          data: _item.data,
-          label: _item.attrs.label.text,
-          parent: Guid.EMPTY,
-          shape: _item.shape,
-          visible: _item.visible,
-          x: _item.store.data.position.x,
-          y: _item.store.data.position.y,
-          ports: portmodel,
-        };
-        // console.log(node);
-        this.nodeArray.push(node);
-      }
+    this.graph.getNodes().forEach((_item: Node) => {
+      this.nodeArray.push(this.getNodeEntity(_item));
     });
     this.graph.getEdges().forEach((_edge: any) => {
-      const source: ICellPortEntity = {
-        cell: _edge.source.cell,
-        port: _edge.source.port,
-      };
-      const target: ICellPortEntity = {
-        cell: _edge.target.cell,
-        port: _edge.target.port,
-      };
-      const linemodel: ILineEntity = {
-        id: _edge.id,
-        data: _edge.data,
-        source: source,
-        target: target,
-      };
-      this.lineArray.push(linemodel);
+      // const source: ICellPortEntity = {
+      //   cell: _edge.source.cell,
+      //   port: _edge.source.port,
+      // };
+      // const target: ICellPortEntity = {
+      //   cell: _edge.target.cell,
+      //   port: _edge.target.port,
+      // };
+      // const linemodel: LineEntity = {
+      //   id: _edge.id,
+      //   data: _edge.data,
+      //   source: source,
+      //   target: target,
+      // };
+      this.lineArray.push(this.getLineEntity(_edge));
     });
     this.flowgraphEntity.nodes = this.nodeArray;
     this.flowgraphEntity.edges = this.lineArray;
-    console.log( this.nodeArray, this.lineArray)
+    console.log(this.nodeArray, this.lineArray);
     this.workFlowDto.flowDesignJson = JSON.stringify(this.flowgraphEntity);
     this.flowmanagerServices.create(this.workFlowDto);
   }
@@ -210,5 +189,47 @@ export default class FlowDesignPanel extends Vue {
     // console.log(this.history.canUndo())
     // this.history.canUndo() && this.history.undo();
     this.graph.history.undo();
+  }
+  /**
+   *
+   * @param _node 清洗对象私有方法
+   */
+  private getNodeEntity(_node: Node): NodeEntity {
+    const node: NodeEntity = new NodeEntity();
+    /**
+     * 创建链接桩对象
+     */
+    const portmodel: Ports = new Ports();
+    portmodel.items = node.ports.items;
+    /**
+     * 定义一个节点对象
+     */
+    node.id = _node.id;
+    node.children = [];
+    node.data = _node.data;
+
+    node.parent = Guid.EMPTY;
+    node.shape = _node.shape;
+    node.visible = _node.visible;
+    (node.x = _node.position().x), (node.y = _node.position().y);
+    node.ports = portmodel;
+
+    if (_node.attrs !== null && typeof _node.attrs !== "undefined") {
+      node.label =
+        typeof _node.attrs.label.text?.toString() !== "undefined"
+          ? _node.attrs.label.text?.toString()
+          : "";
+    }
+    return node;
+  }
+  /**
+   *
+   * @param _node 清洗对象私有方法
+   */
+  private getLineEntity(_edge: Edge): LineEntity {
+    console.log(_edge);
+    debugger;
+    const edge: LineEntity = new LineEntity();
+    return edge;
   }
 }

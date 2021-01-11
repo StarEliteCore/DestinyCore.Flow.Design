@@ -22,10 +22,10 @@
   resolved "https://registry.yarnpkg.com/@ant-design/icons/-/icons-2.1.1.tgz#7b9c08dffd4f5d41db667d9dbe5e0107d0bd9a4a"
   integrity sha512-jCH+k2Vjlno4YWl6g535nHR09PwCEmTBKAG6VqF+rhkrSPRLfgpU2maagwbZPLjaHuU5Jd1DFQ2KJpQuI6uG8w==
 
-"@antv/x6@^1.7.7":
-  version "1.7.11"
-  resolved "https://registry.yarnpkg.com/@antv/x6/-/x6-1.7.11.tgz#b97cb54a7cda21e9a06030c67fbbeff980904789"
-  integrity sha512-o7hNQFFMLeqqiGEaYE0uFHqBQpcUGxPJTaUMsiGt3NuPdBpnOrboi5+0/QavSMdshnxkvgnpiLC/rsB1gXL53g==
+"@antv/x6@^1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@antv/x6/-/x6-1.11.0.tgz#5c2c63a3e33e1f9b6415ef590a030e7b0fb20bc4"
+  integrity sha512-Eyhs4EQrk6C90CA7cPWYLz+hsFaE512CprzG1qTW0J9cOH2sH8FNVqgemVJl8CzRXISb5CMV7HaoJXUV/fNQPQ==
   dependencies:
     csstype "^3.0.3"
     jquery "^3.5.1"
