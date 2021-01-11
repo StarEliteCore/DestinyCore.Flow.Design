@@ -3,6 +3,7 @@ import {
   CirculationTypeEnum,
   NodeTypeEnum,
   ProcessingStrategyEnum,
+  ProcessorTypeEnum,
   SignaturetypeEnum,
 } from "./flow-design-node-enum";
 
@@ -138,6 +139,10 @@ export class ApprovalStrategy {
    * 默认处理者对象
    */
   approvalStrategyDefault: ApprovalStrategyDefault = new ApprovalStrategyDefault();
+  /**
+   * 节点处理者类型
+   */
+  processorType: ProcessorTypeEnum = ProcessorTypeEnum.allUser;
 }
 /**
  * 节点抄送对象

@@ -90,6 +90,41 @@ export enum ApprovalStrategyDefaultEnum{
    */
   position=15,
 }
+/**
+ * 节点处理者类型
+ */
+export enum ProcessorTypeEnum{
+  /**
+   * 所有成员
+   */
+  allUser,
+  /**
+   * 部门
+   */
+  department,
+  /**
+   * 职位
+   */
+  position,
+  /**
+   * 角色
+   */
+  role,
+  /**
+   * 发起者部门领导
+   */
+  initiatorDepartmentLeader,
+  /**
+   * 发起者部门所有成员
+   */
+  initiatorDepartmentAllUser,
+    /**
+   * 上一步处理者
+   */
+  lastStepUser,
+}
+
+
 
 
 

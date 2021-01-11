@@ -1,4 +1,5 @@
-import { CirculationTypeEnum, ProcessingStrategyEnum, SignaturetypeEnum } from "./flow-design-node-enum";
+import { CirculationTypeEnum, ProcessingStrategyEnum, ProcessorTypeEnum, SignaturetypeEnum } from "./flow-design-node-enum";
+
 /**
  * 节点处理策略
  */
@@ -20,4 +21,17 @@ export const signatureTypeArray=[
 export const circulationTypeArray=[
     {key:CirculationTypeEnum.singleStep,label:"单一分支"},
     {key:CirculationTypeEnum.OperateAccordingToConditionsNoStepTips,label:"根据条件判断无后续步骤提示"},
+]
+
+/**
+ * 节点处理者类型
+ */
+export const processorTypeArray=[
+    {key:ProcessorTypeEnum.allUser,label:"所有成员"},
+    {key:ProcessorTypeEnum.department,label:"部门"},
+    {key:ProcessorTypeEnum.position,label:"职位"},
+    {key:ProcessorTypeEnum.role,label:"角色"},
+    {key:ProcessorTypeEnum.initiatorDepartmentLeader,label:"发起者部门领导"},
+    {key:ProcessorTypeEnum.initiatorDepartmentAllUser,label:"发起者部门所有成员"},
+    {key:ProcessorTypeEnum.lastStepUser,label:"上一步处理者"},
 ]
