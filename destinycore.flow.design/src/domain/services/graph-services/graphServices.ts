@@ -76,11 +76,10 @@ export class GraphServices implements IGraphServices {
      * 单击线事件
      */
     this.graph.on("edge:click", ({edge}) => {
-      console.log("单击了线！！！！！！！！", edge);
+      console.log("单击了线！！！！！！！！");
       this.reset();
-      edge.zIndex = 1000;
+      // edge.zIndex = 1000;
       edge.attr("line/stroke", "#41d0ce");
-      console.log()
     });
     this.graph!.on("blank:click", () => {
       this.reset();

@@ -104,10 +104,8 @@ export default class FlowDesignPanel extends Vue {
     /**
      * 双击节点事件
      */
-    this.graph.on("edge:dblclick", ({edge}) => {
-      console.log(edge);
-      debugger;
-      this.getLineEntity(edge);
+    this.graph.on("edge:dblclick", ({ edge }) => {
+      console.log(this.getLineEntity(edge))
       // this.nodeOperateInfo.Show(this.getNodeEntity(node));
     });
     /**
@@ -157,25 +155,10 @@ export default class FlowDesignPanel extends Vue {
       this.nodeArray.push(this.getNodeEntity(_item));
     });
     this.graph.getEdges().forEach((_edge: any) => {
-      // const source: ICellPortEntity = {
-      //   cell: _edge.source.cell,
-      //   port: _edge.source.port,
-      // };
-      // const target: ICellPortEntity = {
-      //   cell: _edge.target.cell,
-      //   port: _edge.target.port,
-      // };
-      // const linemodel: LineEntity = {
-      //   id: _edge.id,
-      //   data: _edge.data,
-      //   source: source,
-      //   target: target,
-      // };
       this.lineArray.push(this.getLineEntity(_edge));
     });
     this.flowgraphEntity.nodes = this.nodeArray;
     this.flowgraphEntity.edges = this.lineArray;
-    console.log(this.nodeArray, this.lineArray);
     this.workFlowDto.flowDesignJson = JSON.stringify(this.flowgraphEntity);
     this.flowmanagerServices.create(this.workFlowDto);
   }
@@ -227,9 +210,12 @@ export default class FlowDesignPanel extends Vue {
    * @param _node 清洗对象私有方法
    */
   private getLineEntity(_edge: Edge): LineEntity {
-    console.log(_edge);
-    debugger;
     const edge: LineEntity = new LineEntity();
+    const source = _edge.source as CellPortEntity;
+    const target = _edge.target as CellPortEntity;
+    edge.source = source;
+    edge.target = target;
+    edge.id = _edge.id.toString()
     return edge;
   }
 }

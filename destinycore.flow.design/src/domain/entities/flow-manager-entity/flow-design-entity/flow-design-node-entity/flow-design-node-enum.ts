@@ -61,7 +61,7 @@ export enum SignaturetypeEnum {
  */
 export enum CirculationTypeEnum{
   /**
-   * 单一步骤
+   * 单一分支
    */
   singleStep=0,
   /**
