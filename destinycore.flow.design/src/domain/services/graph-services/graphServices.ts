@@ -13,6 +13,7 @@ import IGraphConfig from "@/shared/factory/Igraph";
 import { IGraphServices } from "./IgraphServices";
 import { INodeTool } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-node-entity/node-button-config-entity";
 import { injectable } from "inversify";
+import { LineData } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-line-entity/flow-design-line-entity";
 
 @injectable()
 export class GraphServices implements IGraphServices {
@@ -248,6 +249,7 @@ export class GraphServices implements IGraphServices {
         this.graph.removeEdge(edge.id);
         return CheckGraphEdgeConnectedReturnEnum.loopNotAllowed;
       }
+      edge.data = new LineData()
     }
     return CheckGraphEdgeConnectedReturnEnum.None;
   }

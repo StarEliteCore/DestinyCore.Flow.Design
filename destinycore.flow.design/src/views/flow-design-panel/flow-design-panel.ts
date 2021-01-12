@@ -3,6 +3,7 @@ import * as NodeTool from "@/domain/entities/flow-manager-entity/flow-design-con
 import { Addon, Edge, Graph } from "@antv/x6";
 import {
   CellPortEntity,
+  LineData,
   LineEntity,
 } from "@/domain/entities/flow-manager-entity/flow-design-entity/flow-design-line-entity/flow-design-line-entity";
 import {
@@ -83,7 +84,10 @@ export default class FlowDesignPanel extends Vue {
         edge
       );
       const actions = validateEdgeMessage.get(validate);
-      typeof actions !== "undefined" && this.$Message.warning(actions);
+      if (typeof actions !== "undefined") {
+        this.$Message.warning(actions);
+      }
+      console.log(edge)
     });
     /**
      * 双击节点事件
@@ -216,6 +220,7 @@ export default class FlowDesignPanel extends Vue {
     edge.source = source;
     edge.target = target;
     edge.id = _edge.id.toString()
+    edge.data=_edge.data as LineData;
     return edge;
   }
 }

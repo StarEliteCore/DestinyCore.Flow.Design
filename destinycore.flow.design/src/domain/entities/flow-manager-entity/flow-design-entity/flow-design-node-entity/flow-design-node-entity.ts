@@ -117,14 +117,21 @@ export class NodeBasicConfiguration {
  */
 export class ApprovalStrategyDefault {
   /**
-   * 默认处理者类型
+   * 职位默认处理者Id
    */
-  approvalStrategyDefaultType: ApprovalStrategyDefaultEnum =
-    ApprovalStrategyDefaultEnum.none;
+  positionIds: Array<string> = new Array<string>();
   /**
-   * 默认处理者Id
+   * 部门默认处理者Id
    */
-  ids: Array<string> = new Array<string>();
+  departmentIds: Array<string> = new Array<string>();
+  /**
+   * 用户默认处理者Id
+   */
+  userIds: Array<string> = new Array<string>();
+  /**
+   * 角色默认处理者Id
+   */
+  roleIds: Array<string> = new Array<string>();
 }
 
 /**
