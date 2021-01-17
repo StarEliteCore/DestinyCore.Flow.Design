@@ -21,34 +21,47 @@
             <a-form-model-item label="节点名称：">
               <a-input v-model="node.label" />
             </a-form-model-item>
-            <a-form-model-item label="处理策略：">
-              <a-select
-                v-model="node.data.basicConfiguration.processingStrategy"
-                placeholder="请选择处理策略"
+
+            <div class="ant-form-inline">
+              <a-form-model-item
+                label="处理策略："
+                :labelCol="{ span: 8 }"
+                :wrapperCol="{ span: 15 }"
+                class="ant-col ant-col-12"
               >
-                <a-select-option
-                  v-for="item in ProcessingStrategyArr"
-                  :value="item.key"
-                  :key="item.key"
+                <a-select
+                  v-model="node.data.basicConfiguration.processingStrategy"
+                  placeholder="请选择处理策略"
                 >
-                  {{ item.label }}
-                </a-select-option>
-              </a-select>
-            </a-form-model-item>
-            <a-form-model-item label="审签类型：">
-              <a-select
-                v-model="node.data.basicConfiguration.signatureType"
-                placeholder="请选择审签类型"
+                  <a-select-option
+                    v-for="item in ProcessingStrategyArr"
+                    :value="item.key"
+                    :key="item.key"
+                  >
+                    {{ item.label }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+              <a-form-model-item
+                label="审签类型："
+                :labelCol="{ span: 6 }"
+                :wrapperCol="{ span: 15 }"
+                class="ant-col ant-col-10"
               >
-                <a-select-option
-                  v-for="item in signatureTypeArr"
-                  :value="item.key"
-                  :key="item.key"
+                <a-select
+                  v-model="node.data.basicConfiguration.signatureType"
+                  placeholder="请选择审签类型"
                 >
-                  {{ item.label }}
-                </a-select-option>
-              </a-select>
-            </a-form-model-item>
+                  <a-select-option
+                    v-for="item in signatureTypeArr"
+                    :value="item.key"
+                    :key="item.key"
+                  >
+                    {{ item.label }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </div>
           </a-form-model>
         </a-tab-pane>
         <a-tab-pane key="2" tab="审批策略" force-render>
