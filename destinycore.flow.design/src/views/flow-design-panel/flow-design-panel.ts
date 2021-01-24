@@ -87,7 +87,6 @@ export default class FlowDesignPanel extends Vue {
       if (typeof actions !== "undefined") {
         this.$Message.warning(actions);
       }
-      console.log(edge)
     });
     /**
      * 双击节点事件
@@ -207,6 +206,7 @@ export default class FlowDesignPanel extends Vue {
           ? _node.attrs.label.text?.toString()
           : "";
     }
+    console.log(node)
     return node;
   }
   /**

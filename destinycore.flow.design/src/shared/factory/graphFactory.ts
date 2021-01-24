@@ -31,6 +31,7 @@ export default class GraphConstruction {
           thickness: 1, // 网格线宽度/网格点大小
         },
       },
+      snapline: true,//启用对齐线
       history: true,
       clickThreshold: 1, //当鼠标移动次数超过指定的数字时，将不触发鼠标点击事件。
       width: width,
