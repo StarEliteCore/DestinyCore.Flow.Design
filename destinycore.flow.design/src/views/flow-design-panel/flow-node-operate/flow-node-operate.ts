@@ -34,8 +34,13 @@ export default class FlowNodeLineOperate extends Mixins(FlowOperateMixins) {
     // console.log(this.node)
     this.graph.getNodes().filter((_node: Node) => {
       if (_node.id == this.node.id) {
-        _node.attr("label/text", this.node.label);
-        _node.data = this.node.data;
+        _node.setAttrs({
+          label: {
+            text: this.node.label
+          }
+        });//修改label标签名称
+        _node.setData(this.node.data,{overwrite:true})//更新data数据
+        // _node.data = this.node.data;
       }
     });
     this.IsShow = false;
