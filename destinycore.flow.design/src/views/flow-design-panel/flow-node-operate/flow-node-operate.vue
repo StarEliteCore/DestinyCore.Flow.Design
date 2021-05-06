@@ -62,6 +62,42 @@
                 </a-select>
               </a-form-model-item>
             </div>
+            <div class="ant-form-inline">
+              <a-form-model-item
+                label = '意见显示：'
+                :labelCol="{ span: 8 }"
+                :wrapperCol="{ span: 15 }"
+                class="ant-col ant-col-12"
+              >
+                <a-switch />
+              </a-form-model-item>
+              <a-form-model-item
+                label = '是否归档：'
+                :labelCol="{ span: 6 }"
+                :wrapperCol="{ span: 15 }"
+                class="ant-col ant-col-10"
+              >
+                <a-switch />
+              </a-form-model-item>
+            </div>
+            <div class="ant-form-inline">
+                <a-form-model-item label="表单："
+                  :labelCol="{ span: 8 }"
+                  :wrapperCol="{ span: 15 }"
+                  class="ant-col ant-col-12"
+                >
+                    <a-select>
+
+                    </a-select>
+                </a-form-model-item>
+                <a-form-model-item 
+                  class="ant-col ant-col-10"
+                >
+                  <a-select>
+                    
+                  </a-select>
+                </a-form-model-item>
+            </div>
           </a-form-model>
         </a-tab-pane>
         <a-tab-pane key="2" tab="审批策略" force-render>
@@ -98,7 +134,42 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
+            <a-form-model-item label="处理者步骤">
+              <a-select
+                placeholder="请选择处理者步骤"
+              >
+              </a-select>
+            </a-form-model-item>
+            <a-form-model-item label="默认处理者">
+              <a-select
+                placeholder="请选择默认处理者"
+              >
+              </a-select>
+            </a-form-model-item>
+            <a-form-model-item label="运行时选择">
+              <a-switch />
+              <a-checkbox >有默认处理人时直接发送</a-checkbox>
+            </a-form-model-item>
+            <a-form-model-item label="选择范围"
+              :labelCol="{ span: 8 }"
+              :wrapperCol="{ span: 15 }"
+              class="ant-col ant-col-12"
+            >
+              <a-select/>
+              
+            </a-form-model-item>
+            <a-form-model-item 
+                  class="ant-col ant-col-10"
+                >
+                  <a-select>
+                    
+                  </a-select>
+            </a-form-model-item>
+            <a-form-model-item label="跳过策略">
+              <a-checkbox >发送人和接收人是同一人时</a-checkbox>
+            </a-form-model-item>
           </a-form-model>
+          
         </a-tab-pane>
         <a-tab-pane key="3" tab="按钮配置"> Content of Tab Pane 3 </a-tab-pane>
       </a-tabs>
